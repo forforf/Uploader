@@ -1,6 +1,6 @@
 ﻿namespace Uploader
 {
-    partial class Form1
+    partial class Uploader
     {
         /// <summary>
         /// Required designer variable.
@@ -28,12 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // Uploader
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Name = "Uploader";
+            this.Text = "Uploader";
+            this.Load += new System.EventHandler(this.Uploader_Load);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
     }
 }
 
