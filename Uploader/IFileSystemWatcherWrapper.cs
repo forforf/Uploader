@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace Uploader
 {
-    interface IFileSystemWatcherWrapper
+    public interface IFileSystemWatcherWrapper
     {
         event FileSystemEventHandler Changed;
         bool EnableRaisingEvents { get; set; }
+        bool IncludeSubdirectories { get; set; }
+        NotifyFilters NotifyFilter { get; set; }
+        string Path { get; set; }
     }
 }
