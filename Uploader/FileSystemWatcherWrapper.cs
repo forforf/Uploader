@@ -12,12 +12,13 @@ namespace Uploader
     {
         private FileSystemWatcher watcher;
 
-        public event FileSystemEventHandler Changed;
+        private event FileSystemEventHandler changed;
 
         public FileSystemWatcherWrapper(FileSystemWatcher watcher)
         {
-            //Defaults
+            
             this.watcher = watcher;
+            //Defaults
             this.EnableRaisingEvents = false;
             this.IncludeSubdirectories = true;
             this.NotifyFilter = NotifyFilters.Attributes |
@@ -27,43 +28,41 @@ namespace Uploader
                 NotifyFilters.LastWrite |
                 NotifyFilters.Size |
                 NotifyFilters.Security;
-            //this.Path = "";
-            System.Diagnostics.Debug.WriteLine("Intializing watcher wrapper");
-            this.Changed += (watchSender, args) =>
-            {
-                System.Diagnostics.Debug.WriteLine("Something changed FW");
-            };
 
-            watcher.Changed += this.Changed;
+            System.Diagnostics.Debug.WriteLine("Intializing watcher wrapper");
+
+            watcher.Changed += this.changed;
             this.watcher = watcher;
-            //watcher.EnableRaisingEvents = this.EnableRaisingEvents;
-            //watcher.IncludeSubdirectories = this.IncludeSubdirectories;
-            //watcher.NotifyFilter = this.NotifyFilter;
-            //watcher.Path = this.Path;
+        }
+
+        public event FileSystemEventHandler OnChanged
+        {
+            add { this.watcher.Changed += value; }
+            remove { this.watcher.Changed -= value; }
         }
 
         public bool EnableRaisingEvents
         {
             get { return watcher.EnableRaisingEvents; }
-            set { watcher.EnableRaisingEvents = value; }
+            set { this.watcher.EnableRaisingEvents = value; }
         }
 
         public bool IncludeSubdirectories
         {
             get { return watcher.IncludeSubdirectories; }
-            set { watcher.IncludeSubdirectories = value; }
+            set { this.watcher.IncludeSubdirectories = value; }
         }
 
         public NotifyFilters NotifyFilter
         {
             get { return watcher.NotifyFilter; }
-            set { watcher.NotifyFilter = value; }
+            set { this.watcher.NotifyFilter = value; }
         }
 
         public String Path
         {
             get { return watcher.Path; }
-            set { watcher.Path = value; }
+            set { this.watcher.Path = value; }
         }
     }
 }

@@ -18,22 +18,14 @@ namespace Uploader
 
             this.fileSystemWatcher = fileSystemWatcher;
             this.fileSystemWatcher.Path = directory;
-            //this.fileSystemWatcher.IncludeSubdirectories = true;
-            //this.fileSystemWatcher.NotifyFilter = NotifyFilters.Attributes |
-            //    NotifyFilters.CreationTime |
-            //    NotifyFilters.FileName |
-            //    NotifyFilters.LastAccess |
-            //    NotifyFilters.LastWrite |
-            //    NotifyFilters.Size |
-            //    NotifyFilters.Security;
-            
-
-            this.fileSystemWatcher.Changed += (sender, args) =>
-            {
-                System.Diagnostics.Debug.WriteLine("Something changed");
-            };
 
             this.fileSystemWatcher.EnableRaisingEvents = true;
+        }
+
+        public event FileSystemEventHandler OnChanged
+        {
+            add { this.fileSystemWatcher.OnChanged += value; }
+            remove { this.fileSystemWatcher.OnChanged -= value; }
         }
     }
 }
