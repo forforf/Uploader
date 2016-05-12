@@ -52,6 +52,7 @@
     <Compile Include="FormUploaderMain.Designer.cs">
       <DependentUpon>FormUploaderMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="IFileDetector.cs" />
     <Compile Include="IFileSystemWatcherWrapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

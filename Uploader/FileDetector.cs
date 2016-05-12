@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 
 namespace Uploader
 {
-    class FileDetector
+
+
+    public class FileDetector : IFileDetector
     {
         private IFileSystemWatcherWrapper fileSystemWatcher;
 
@@ -20,6 +22,17 @@ namespace Uploader
             this.fileSystemWatcher.Path = directory;
 
             this.fileSystemWatcher.EnableRaisingEvents = true;
+        }
+
+        // Factory class automatically injects a FileSystemWatcher
+        public class Factory
+        {
+            public static IFileDetector CreateFileDetector(string directory)
+            {
+                var fsw = new FileSystemWatcher();
+                var fsww = new FileSystemWatcherWrapper(fsw);
+                return new FileDetector( fsww, directory);
+            }
         }
 
         public event FileSystemEventHandler OnChanged

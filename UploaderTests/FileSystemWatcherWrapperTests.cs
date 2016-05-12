@@ -9,11 +9,8 @@ namespace UploaderTests
     [TestClass]
     public class FileSystemWatcherWrapperTests
     {
-        //bool EnableRaisingEvents { get; set; }
-        //bool IncludeSubdirectories { get; set; }
-        //NotifyFilters NotifyFilter { get; set; }
         [TestMethod]
-        public void Test_Changed()
+        public void Test_OnChanged()
         {
             // Arrange
             var mock = new Mock<IFileSystemWatcherWrapper>();
@@ -81,10 +78,10 @@ namespace UploaderTests
             IFileSystemWatcherWrapper fsw = mock.Object;
 
             // Act
-            fsw.Path = "c:\\some\\path";
+            fsw.Path = @"c:\some\path";
 
             // Assert
-            Assert.AreEqual("c:\\some\\path", fsw.Path);
+            Assert.AreEqual(@"c:\some\path", fsw.Path);
         }
     }
 }
