@@ -10,5 +10,6 @@ namespace Uploader
     public interface IFileDetector
     {
         event FileSystemEventHandler OnChanged;
+        event FileSystemEventHandler OnCreated;
     }
 }

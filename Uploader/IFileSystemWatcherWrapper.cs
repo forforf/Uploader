@@ -10,6 +10,7 @@ namespace Uploader
     public interface IFileSystemWatcherWrapper
     {
         event FileSystemEventHandler OnChanged;
+        event FileSystemEventHandler OnCreated;
         bool EnableRaisingEvents { get; set; }
         bool IncludeSubdirectories { get; set; }
         NotifyFilters NotifyFilter { get; set; }

@@ -40,5 +40,11 @@ namespace Uploader
             add { this.fileSystemWatcher.OnChanged += value; }
             remove { this.fileSystemWatcher.OnChanged -= value; }
         }
+
+        public event FileSystemEventHandler OnCreated
+        {
+            add { this.fileSystemWatcher.OnCreated += value; }
+            remove { this.fileSystemWatcher.OnCreated -= value; }
+        }
     }
 }

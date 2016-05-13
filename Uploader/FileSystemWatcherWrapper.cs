@@ -41,6 +41,12 @@ namespace Uploader
             remove { this.watcher.Changed -= value; }
         }
 
+        public event FileSystemEventHandler OnCreated
+        {
+            add { this.watcher.Created += value; }
+            remove { this.watcher.Created -= value; }
+        }
+
         public bool EnableRaisingEvents
         {
             get { return watcher.EnableRaisingEvents; }
