@@ -44,12 +44,12 @@
             // 
             this.textBoxLocalPath.Location = new System.Drawing.Point(12, 29);
             this.textBoxLocalPath.Name = "textBoxLocalPath";
-            this.textBoxLocalPath.Size = new System.Drawing.Size(377, 20);
+            this.textBoxLocalPath.Size = new System.Drawing.Size(365, 20);
             this.textBoxLocalPath.TabIndex = 0;
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(395, 28);
+            this.btnBrowse.Location = new System.Drawing.Point(383, 29);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(27, 23);
             this.btnBrowse.TabIndex = 1;
@@ -62,7 +62,7 @@
             // 
             this.textBoxS3Path.Location = new System.Drawing.Point(15, 77);
             this.textBoxS3Path.Name = "textBoxS3Path";
-            this.textBoxS3Path.Size = new System.Drawing.Size(407, 20);
+            this.textBoxS3Path.Size = new System.Drawing.Size(362, 20);
             this.textBoxS3Path.TabIndex = 2;
             // 
             // listBoxFilestatus
@@ -71,17 +71,19 @@
             this.listBoxFilestatus.FormattingEnabled = true;
             this.listBoxFilestatus.Location = new System.Drawing.Point(12, 159);
             this.listBoxFilestatus.Name = "listBoxFilestatus";
-            this.listBoxFilestatus.Size = new System.Drawing.Size(511, 160);
+            this.listBoxFilestatus.Size = new System.Drawing.Size(483, 160);
             this.listBoxFilestatus.TabIndex = 3;
             // 
             // btnUpload
             // 
-            this.btnUpload.Location = new System.Drawing.Point(448, 32);
+            this.btnUpload.Image = global::Uploader.Properties.Resources.cloud_up_sm1;
+            this.btnUpload.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnUpload.Location = new System.Drawing.Point(383, 68);
             this.btnUpload.Name = "btnUpload";
-            this.btnUpload.Size = new System.Drawing.Size(75, 23);
+            this.btnUpload.Size = new System.Drawing.Size(53, 36);
             this.btnUpload.TabIndex = 4;
-            this.btnUpload.Text = "Upload";
             this.btnUpload.UseVisualStyleBackColor = true;
+            this.btnUpload.Click += new System.EventHandler(this.btnUpload_Click);
             // 
             // label1
             // 
@@ -105,12 +107,14 @@
             // 
             // btnWatch
             // 
-            this.btnWatch.Location = new System.Drawing.Point(448, 61);
+            this.btnWatch.Image = global::Uploader.Properties.Resources.cloud_cycle_sm;
+            this.btnWatch.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnWatch.Location = new System.Drawing.Point(442, 68);
             this.btnWatch.Name = "btnWatch";
-            this.btnWatch.Size = new System.Drawing.Size(75, 23);
+            this.btnWatch.Size = new System.Drawing.Size(53, 36);
             this.btnWatch.TabIndex = 8;
-            this.btnWatch.Text = "Watch";
             this.btnWatch.UseVisualStyleBackColor = true;
+            this.btnWatch.Click += new System.EventHandler(this.btnWatch_Click);
             // 
             // label3
             // 
@@ -126,9 +130,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.BackgroundImage = global::Uploader.Properties.Resources.gears_light_bg;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(537, 331);
+            this.ClientSize = new System.Drawing.Size(508, 331);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.btnWatch);
             this.Controls.Add(this.label2);

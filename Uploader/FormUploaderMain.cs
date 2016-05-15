@@ -59,10 +59,10 @@ namespace Uploader
                 // Emit Parent Directory
                 .Select(fileDropped => (string)fileDropped.ParentPath);
             uploaderSubscription = watcherObservable.Subscribe(
-                    x =>
+                    path =>
                     {
-                        Console.WriteLine("OnNext: {0}", x);
-                        UploadToS3(x);
+                        Console.WriteLine("OnNext: {0}", path);
+                        UploadToS3(path, textBoxS3Path.Text);
                     },
                     ex => Console.WriteLine("OnError: {0}", ex.Message),
                     () => Console.WriteLine("OnCompleted"));
@@ -70,10 +70,14 @@ namespace Uploader
             watcher.Start();
         }
         
-        private void UploadToS3(string directory)
+        private void UploadToS3(string localPath, string s3BucketPath)
         {
-            directoryTransferUtility.UploadDirectory(directory,
-                                                     @"forforf-uploader");
+            Console.WriteLine("Uploading from: " + localPath + " to: " + s3BucketPath);
+            directoryTransferUtility.UploadDirectory(localPath, 
+                s3BucketPath,
+                "*.*",
+                SearchOption.AllDirectories);
+
             Console.WriteLine("Upload completed");
         }
 
@@ -98,6 +102,16 @@ namespace Uploader
                 string[] files = Directory.GetFiles(selectedPath);
                 MessageBox.Show("Files found: " + files.Length.ToString(), "Message");
             }
+        }
+
+        private void btnUpload_Click(object sender, EventArgs e)
+        {
+            UploadToS3(textBoxLocalPath.Text, textBoxS3Path.Text);
+        }
+
+        private void btnWatch_Click(object sender, EventArgs e)
+        {
+            StartWatch();
         }
 
     }

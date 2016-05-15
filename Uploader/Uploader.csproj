@@ -142,8 +142,20 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="cloud-cycle-sm.png" />
+    <Content Include="cloud-cycle-vsm.png" />
+    <Content Include="cloud-cycle.png" />
+    <Content Include="cloud-up-sm.png" />
+    <Content Include="cloud-up-vsm.png" />
+    <Content Include="cloud-up.png" />
     <Content Include="forforf-gears.png" />
     <Content Include="gears-light-bg.png" />
+    <None Include="Resources\cloud-cycle-sm.png" />
+    <None Include="Resources\cloud-up-sm1.png" />
+    <None Include="Resources\cloud-cycle-vsm.png" />
+    <None Include="Resources\cloud-up-vsm.png" />
+    <None Include="Resources\cloud-up-sm.png" />
+    <None Include="Resources\cloud-up.png" />
     <None Include="Resources\gears-light-bg.png" />
     <None Include="Resources\forforf-gears.png" />
     <Content Include="single-gear.png" />
