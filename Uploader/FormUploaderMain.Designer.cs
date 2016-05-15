@@ -36,8 +36,9 @@
             this.btnUpload = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.btnWatch = new System.Windows.Forms.Button();
+            this.btnWatchStart = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
+            this.btnWatchStop = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // textBoxLocalPath
@@ -105,16 +106,16 @@
             this.label2.TabIndex = 7;
             this.label2.Text = "S3 Bucket/Folder";
             // 
-            // btnWatch
+            // btnWatchStart
             // 
-            this.btnWatch.Image = global::Uploader.Properties.Resources.cloud_cycle_sm;
-            this.btnWatch.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.btnWatch.Location = new System.Drawing.Point(442, 68);
-            this.btnWatch.Name = "btnWatch";
-            this.btnWatch.Size = new System.Drawing.Size(53, 36);
-            this.btnWatch.TabIndex = 8;
-            this.btnWatch.UseVisualStyleBackColor = true;
-            this.btnWatch.Click += new System.EventHandler(this.btnWatch_Click);
+            this.btnWatchStart.Image = global::Uploader.Properties.Resources.cloud_cycle_sm;
+            this.btnWatchStart.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnWatchStart.Location = new System.Drawing.Point(442, 68);
+            this.btnWatchStart.Name = "btnWatchStart";
+            this.btnWatchStart.Size = new System.Drawing.Size(53, 36);
+            this.btnWatchStart.TabIndex = 8;
+            this.btnWatchStart.UseVisualStyleBackColor = true;
+            this.btnWatchStart.Click += new System.EventHandler(this.btnWatchStart_Click);
             // 
             // label3
             // 
@@ -126,6 +127,17 @@
             this.label3.TabIndex = 9;
             this.label3.Text = "Status";
             // 
+            // btnWatchStop
+            // 
+            this.btnWatchStop.Image = global::Uploader.Properties.Resources.cloud_sync_sm1;
+            this.btnWatchStop.Location = new System.Drawing.Point(442, 68);
+            this.btnWatchStop.Name = "btnWatchStop";
+            this.btnWatchStop.Size = new System.Drawing.Size(53, 36);
+            this.btnWatchStop.TabIndex = 10;
+            this.btnWatchStop.UseVisualStyleBackColor = true;
+            this.btnWatchStop.Visible = false;
+            this.btnWatchStop.Click += new System.EventHandler(this.btnWatchStop_Click);
+            // 
             // Uploader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -134,8 +146,9 @@
             this.BackgroundImage = global::Uploader.Properties.Resources.gears_light_bg;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(508, 331);
+            this.Controls.Add(this.btnWatchStop);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.btnWatch);
+            this.Controls.Add(this.btnWatchStart);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnUpload);
@@ -164,8 +177,9 @@
         private System.Windows.Forms.Button btnUpload;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button btnWatch;
+        private System.Windows.Forms.Button btnWatchStart;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button btnWatchStop;
     }
 }
 

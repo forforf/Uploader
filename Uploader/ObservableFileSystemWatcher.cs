@@ -66,6 +66,11 @@ public class ObservableFileSystemWatcher : IDisposable
         Watcher.EnableRaisingEvents = false;
     }
 
+    public bool IsWatching()
+    {
+        return Watcher.EnableRaisingEvents;
+    }
+
     public void Dispose()
     {
         Watcher.Dispose();

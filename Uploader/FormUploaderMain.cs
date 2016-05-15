@@ -8,7 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Disposables;
 using Amazon.S3;
 using Amazon.S3.Transfer;
 using System.Security.Principal;
@@ -20,6 +22,8 @@ namespace Uploader
     {
         private IDisposable uploaderSubscription;
         private TransferUtility directoryTransferUtility;
+        private IObservable<EventPattern<EventArgs>> browseClickObservable;
+        private bool changeMeToWatcher_IsWatching = false;
 
         public Uploader()
         {
@@ -40,12 +44,14 @@ namespace Uploader
             textBoxLocalPath.Text = (string)Properties.Settings.Default["WatchPath"];
             textBoxS3Path.Text = (string)Properties.Settings.Default["S3BucketPath"];
 
-
         }
 
         private void Uploader_FormClosed(object sender, FormClosedEventArgs e)
         {
-            uploaderSubscription.Dispose();
+            if(!uploaderSubscription.Equals(null))
+            {
+                uploaderSubscription.Dispose();
+            }
         }
 
         private void StartWatch()
@@ -69,14 +75,19 @@ namespace Uploader
 
             watcher.Start();
         }
+
+        private void ToggleWatch()
+        {
+            changeMeToWatcher_IsWatching = !changeMeToWatcher_IsWatching;
+            btnWatchStart.Visible = !changeMeToWatcher_IsWatching;
+            btnWatchStop.Visible = !btnWatchStart.Visible;
+        }
         
         private void UploadToS3(string localPath, string s3BucketPath)
         {
             Console.WriteLine("Uploading from: " + localPath + " to: " + s3BucketPath);
             directoryTransferUtility.UploadDirectory(localPath, 
-                s3BucketPath,
-                "*.*",
-                SearchOption.AllDirectories);
+                s3BucketPath);
 
             Console.WriteLine("Upload completed");
         }
@@ -109,10 +120,14 @@ namespace Uploader
             UploadToS3(textBoxLocalPath.Text, textBoxS3Path.Text);
         }
 
-        private void btnWatch_Click(object sender, EventArgs e)
+        private void btnWatchStart_Click(object sender, EventArgs e)
         {
-            StartWatch();
+            ToggleWatch();
         }
 
+        private void btnWatchStop_Click(object sender, EventArgs e)
+        {
+            ToggleWatch();
+        }
     }
 }
