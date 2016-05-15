@@ -8,14 +8,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Reactive.Linq;
+using Amazon.S3;
+using Amazon.S3.Transfer;
+using System.Security.Principal;
+
 
 namespace Uploader
 {
     public partial class Uploader : Form
     {
-
-        private FileDetector tempFileDetector;
-        private FileSystemWatcher MyWatcher;
+        private IDisposable uploaderSubscription;
+        private TransferUtility directoryTransferUtility;
 
         public Uploader()
         {
@@ -25,31 +29,76 @@ namespace Uploader
         private void Uploader_Load(object sender, EventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("Loading Form");
-            //this.MyWatcher = new FileSystemWatcher();
-            //MyWatcher.Path = "c:\\temp";
-            //MyWatcher.IncludeSubdirectories = true;
-            //MyWatcher.NotifyFilter = NotifyFilters.Attributes |
-            //    NotifyFilters.CreationTime |
-            //    NotifyFilters.FileName |
-            //    NotifyFilters.LastAccess |
-            //    NotifyFilters.LastWrite |
-            //    NotifyFilters.Size |
-            //    NotifyFilters.Security;
-            //MyWatcher.EnableRaisingEvents = true;
-            //this.MyWatcher.Changed += (watchSender, args) =>
-            //{
-            //    System.Diagnostics.Debug.WriteLine("Something changed FW");
-            //};
-            String watchPath = "c:\\temp";
-            this.tempFileDetector = new FileDetector(
-                new FileSystemWatcherWrapper(new FileSystemWatcher()),
-                watchPath 
-            );
 
-            this.tempFileDetector.OnChanged += (source, args) =>
-            {
-                System.Diagnostics.Debug.WriteLine("Something changed: " + args.FullPath + ":" + args.ChangeType);
-            };
+            WindowsIdentity id = WindowsIdentity.GetCurrent();
+            string defaultPassword = id.User.AccountDomainSid.Value;
+            Console.WriteLine("PW: " + defaultPassword);
+
+            var s3Client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);
+            directoryTransferUtility = new TransferUtility(s3Client);
+
+            textBoxLocalPath.Text = (string)Properties.Settings.Default["WatchPath"];
+            textBoxS3Path.Text = (string)Properties.Settings.Default["S3BucketPath"];
+
+
         }
+
+        private void Uploader_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            uploaderSubscription.Dispose();
+        }
+
+        private void StartWatch()
+        {
+            Console.WriteLine("Watch Path: " + Properties.Settings.Default["WatchPath"]);
+            string watchPath = (string)Properties.Settings.Default["WatchPath"];
+
+            var watcher = new FileDropWatcher(watchPath, "");
+
+            var watcherObservable = watcher.Dropped
+                // Emit Parent Directory
+                .Select(fileDropped => (string)fileDropped.ParentPath);
+            uploaderSubscription = watcherObservable.Subscribe(
+                    x =>
+                    {
+                        Console.WriteLine("OnNext: {0}", x);
+                        UploadToS3(x);
+                    },
+                    ex => Console.WriteLine("OnError: {0}", ex.Message),
+                    () => Console.WriteLine("OnCompleted"));
+
+            watcher.Start();
+        }
+        
+        private void UploadToS3(string directory)
+        {
+            directoryTransferUtility.UploadDirectory(directory,
+                                                     @"forforf-uploader");
+            Console.WriteLine("Upload completed");
+        }
+
+        private void btnBrowse_Click(object sender, EventArgs e)
+        {
+            DialogResult result = folderBrowserDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+
+                var selectedPath = folderBrowserDialog1.SelectedPath;
+                // This really should be an observable that can be subscribed to
+                // rather than pushing to the text box from here
+                // ... sigh ... just a bit beyond me at the moement.
+                textBoxLocalPath.Text = selectedPath;
+                Properties.Settings.Default["WatchPath"] = selectedPath;
+                Properties.Settings.Default.Save();
+                
+                //
+                // The user selected a folder and pressed the OK button.
+                // We print the number of files found.
+                //
+                string[] files = Directory.GetFiles(selectedPath);
+                MessageBox.Show("Files found: " + files.Length.ToString(), "Message");
+            }
+        }
+
     }
 }

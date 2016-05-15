@@ -1,30 +1,25 @@
 ﻿using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 
-namespace UploaderTests
+public class FileIntegrationTestsBase : AssertionHelper
 {
-    public class FileIntegrationTestsBase : AssertionHelper
+    protected string TempPath;
+
+    [SetUp]
+    public void BeforeEachTest()
     {
-        protected string TempPath;
+        TempPath = Path.Combine(@"c:\temp", Guid.NewGuid().ToString());
+        Directory.CreateDirectory(TempPath);
+    }
 
-        [SetUp]
-        public void BeforeEachTest()
+    [TearDown]
+    public void AfterEachTest()
+    {
+        if (!Directory.Exists(TempPath))
         {
-            var BasePath = @"c:\temp";
-            TempPath = BasePath + Guid.NewGuid().ToString();
-            Directory.CreateDirectory(TempPath);
+            return;
         }
-
-        [TearDown]
-        public void AfterEachTest()
-        {
-            if (!Directory.Exists(TempPath))
-            {
-                return;
-            }
-            Directory.Delete(TempPath, true);
-        }
+        Directory.Delete(TempPath, true);
     }
 }
