@@ -23,43 +23,49 @@ namespace Uploader
         private IDisposable uploaderSubscription;
         private TransferUtility directoryTransferUtility;
         private IObservable<EventPattern<EventArgs>> browseClickObservable;
-        private bool changeMeToWatcher_IsWatching = false;
+        private FileDropWatcher watcher;
+        private List<string> statusItems = new List<string>();
 
         public Uploader()
         {
             InitializeComponent();
+
+            var s3Client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);
+            directoryTransferUtility = new TransferUtility(s3Client);
         }
 
         private void Uploader_Load(object sender, EventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("Loading Form");
+            StatusBoxUpdate("Starting up ...");
 
             WindowsIdentity id = WindowsIdentity.GetCurrent();
             string defaultPassword = id.User.AccountDomainSid.Value;
             Console.WriteLine("PW: " + defaultPassword);
 
-            var s3Client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);
-            directoryTransferUtility = new TransferUtility(s3Client);
-
             textBoxLocalPath.Text = (string)Properties.Settings.Default["WatchPath"];
             textBoxS3Path.Text = (string)Properties.Settings.Default["S3BucketPath"];
-
+            StatusBoxUpdate("Ready.");
         }
 
         private void Uploader_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if(!uploaderSubscription.Equals(null))
+            if(uploaderSubscription != null)
             {
                 uploaderSubscription.Dispose();
             }
+            if (this.watcher != null)
+            {
+                this.watcher.Dispose();
+            }
         }
 
-        private void StartWatch()
+        private void SetupWatcher()
         {
-            Console.WriteLine("Watch Path: " + Properties.Settings.Default["WatchPath"]);
-            string watchPath = (string)Properties.Settings.Default["WatchPath"];
+            string watchPath = textBoxLocalPath.Text;
+            Console.WriteLine("Watch Path: " + watchPath);
+            StatusBoxUpdate("Watch path: " + watchPath);
 
-            var watcher = new FileDropWatcher(watchPath, "");
+            this.watcher = new FileDropWatcher(watchPath, "");
 
             var watcherObservable = watcher.Dropped
                 // Emit Parent Directory
@@ -68,26 +74,90 @@ namespace Uploader
                     path =>
                     {
                         Console.WriteLine("OnNext: {0}", path);
+                        StatusBoxUpdate("Uploading " + path + " to " + textBoxS3Path.Text + " ...");
                         UploadToS3(path, textBoxS3Path.Text);
                     },
                     ex => Console.WriteLine("OnError: {0}", ex.Message),
                     () => Console.WriteLine("OnCompleted"));
+        }
 
-            watcher.Start();
+        //private void StartWatch()
+        //{
+        //    Console.WriteLine("Watch Path: " + Properties.Settings.Default["WatchPath"]);
+        //    var defaultPath = (string)Properties.Settings.Default["WatchPath"];
+        //    StatusBoxUpdate("Starting Watch on Default Path: " + defaultPath);
+        //    string watchPath = defaultPath;
+
+        //    var watcher = new FileDropWatcher(watchPath, "");
+
+        //    var watcherObservable = watcher.Dropped
+        //        // Emit Parent Directory
+        //        .Select(fileDropped => (string)fileDropped.ParentPath);
+        //    uploaderSubscription = watcherObservable.Subscribe(
+        //            path =>
+        //            {
+        //                Console.WriteLine("OnNext: {0}", path);
+        //                UploadToS3(path, textBoxS3Path.Text);
+        //            },
+        //            ex => Console.WriteLine("OnError: {0}", ex.Message),
+        //            () => Console.WriteLine("OnCompleted"));
+
+        //    watcher.Start();
+        //}
+
+        private void StatusBoxUpdate(String statusText)
+        {   
+            this.BeginInvoke(new Action(delegate() 
+                {
+                    this.statusItems.Add(statusText);
+                    this.listBoxStatus.DataSource = null;
+                    //this.statusItems.Reverse();
+                    this.listBoxStatus.DataSource = statusItems;
+                    // scroll list box
+                    listBoxStatus.TopIndex = listBoxStatus.Items.Count - 1;
+                }));  
+
         }
 
         private void ToggleWatch()
         {
-            changeMeToWatcher_IsWatching = !changeMeToWatcher_IsWatching;
-            btnWatchStart.Visible = !changeMeToWatcher_IsWatching;
-            btnWatchStop.Visible = !btnWatchStart.Visible;
+            if (this.watcher == null)
+            {
+                //string watchPath = (string)Properties.Settings.Default["WatchPath"];
+                //this.watcher = new FileDropWatcher(watchPath, "");
+                StatusBoxUpdate("Setting up watcher ...");
+                SetupWatcher();
+                StatusBoxUpdate("Setup complete.");
+            }
+
+            bool watchIsOn = this.watcher.IsWatching();
+            if (watchIsOn) 
+            {
+
+                this.watcher.Stop();
+                StatusBoxUpdate("Watcher Stopped");
+            }
+            else
+            {
+                this.watcher.Start();
+                StatusBoxUpdate("Watching: " + textBoxLocalPath.Text);
+            };
+
+            watchIsOn = this.watcher.IsWatching();
+            Console.WriteLine("Watcher Running?: " + this.watcher.IsWatching());
+            btnWatchStop.Visible = watchIsOn;
+            btnWatchStart.Visible = !btnWatchStop.Visible;
         }
         
         private void UploadToS3(string localPath, string s3BucketPath)
         {
             Console.WriteLine("Uploading from: " + localPath + " to: " + s3BucketPath);
-            directoryTransferUtility.UploadDirectory(localPath, 
-                s3BucketPath);
+            //directoryTransferUtility.UploadDirectory(localPath, 
+            //    s3BucketPath);
+            directoryTransferUtility.UploadDirectory(localPath,
+                                             s3BucketPath,
+                                             "*.*",
+                                             SearchOption.AllDirectories);
 
             Console.WriteLine("Upload completed");
         }
@@ -105,6 +175,13 @@ namespace Uploader
                 textBoxLocalPath.Text = selectedPath;
                 Properties.Settings.Default["WatchPath"] = selectedPath;
                 Properties.Settings.Default.Save();
+
+                // We changed paths to watch
+                if (this.watcher != null)
+                {
+                    this.watcher.Dispose();
+                }
+                this.watcher = new FileDropWatcher(selectedPath, "");
                 
                 //
                 // The user selected a folder and pressed the OK button.

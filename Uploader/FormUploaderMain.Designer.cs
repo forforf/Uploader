@@ -32,7 +32,7 @@
             this.textBoxLocalPath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.textBoxS3Path = new System.Windows.Forms.TextBox();
-            this.listBoxFilestatus = new System.Windows.Forms.ListBox();
+            this.listBoxStatus = new System.Windows.Forms.ListBox();
             this.btnUpload = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -43,14 +43,14 @@
             // 
             // textBoxLocalPath
             // 
-            this.textBoxLocalPath.Location = new System.Drawing.Point(12, 29);
+            this.textBoxLocalPath.Location = new System.Drawing.Point(135, 22);
             this.textBoxLocalPath.Name = "textBoxLocalPath";
-            this.textBoxLocalPath.Size = new System.Drawing.Size(365, 20);
+            this.textBoxLocalPath.Size = new System.Drawing.Size(396, 20);
             this.textBoxLocalPath.TabIndex = 0;
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(383, 29);
+            this.btnBrowse.Location = new System.Drawing.Point(537, 19);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(27, 23);
             this.btnBrowse.TabIndex = 1;
@@ -61,25 +61,25 @@
             // 
             // textBoxS3Path
             // 
-            this.textBoxS3Path.Location = new System.Drawing.Point(15, 77);
+            this.textBoxS3Path.Location = new System.Drawing.Point(135, 70);
             this.textBoxS3Path.Name = "textBoxS3Path";
-            this.textBoxS3Path.Size = new System.Drawing.Size(362, 20);
+            this.textBoxS3Path.Size = new System.Drawing.Size(297, 20);
             this.textBoxS3Path.TabIndex = 2;
             // 
-            // listBoxFilestatus
+            // listBoxStatus
             // 
-            this.listBoxFilestatus.BackColor = System.Drawing.SystemColors.Menu;
-            this.listBoxFilestatus.FormattingEnabled = true;
-            this.listBoxFilestatus.Location = new System.Drawing.Point(12, 159);
-            this.listBoxFilestatus.Name = "listBoxFilestatus";
-            this.listBoxFilestatus.Size = new System.Drawing.Size(483, 160);
-            this.listBoxFilestatus.TabIndex = 3;
+            this.listBoxStatus.BackColor = System.Drawing.SystemColors.Menu;
+            this.listBoxStatus.FormattingEnabled = true;
+            this.listBoxStatus.Location = new System.Drawing.Point(12, 159);
+            this.listBoxStatus.Name = "listBoxStatus";
+            this.listBoxStatus.Size = new System.Drawing.Size(552, 160);
+            this.listBoxStatus.TabIndex = 3;
             // 
             // btnUpload
             // 
             this.btnUpload.Image = global::Uploader.Properties.Resources.cloud_up_sm1;
             this.btnUpload.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.btnUpload.Location = new System.Drawing.Point(383, 68);
+            this.btnUpload.Location = new System.Drawing.Point(452, 54);
             this.btnUpload.Name = "btnUpload";
             this.btnUpload.Size = new System.Drawing.Size(53, 36);
             this.btnUpload.TabIndex = 4;
@@ -90,7 +90,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label1.Location = new System.Drawing.Point(12, 13);
+            this.label1.Location = new System.Drawing.Point(12, 25);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(77, 13);
             this.label1.TabIndex = 6;
@@ -100,7 +100,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label2.Location = new System.Drawing.Point(12, 61);
+            this.label2.Location = new System.Drawing.Point(12, 73);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(107, 13);
             this.label2.TabIndex = 7;
@@ -110,7 +110,7 @@
             // 
             this.btnWatchStart.Image = global::Uploader.Properties.Resources.cloud_cycle_sm;
             this.btnWatchStart.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.btnWatchStart.Location = new System.Drawing.Point(442, 68);
+            this.btnWatchStart.Location = new System.Drawing.Point(511, 54);
             this.btnWatchStart.Name = "btnWatchStart";
             this.btnWatchStart.Size = new System.Drawing.Size(53, 36);
             this.btnWatchStart.TabIndex = 8;
@@ -130,7 +130,7 @@
             // btnWatchStop
             // 
             this.btnWatchStop.Image = global::Uploader.Properties.Resources.cloud_sync_sm1;
-            this.btnWatchStop.Location = new System.Drawing.Point(442, 68);
+            this.btnWatchStop.Location = new System.Drawing.Point(511, 54);
             this.btnWatchStop.Name = "btnWatchStop";
             this.btnWatchStop.Size = new System.Drawing.Size(53, 36);
             this.btnWatchStop.TabIndex = 10;
@@ -145,14 +145,14 @@
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.BackgroundImage = global::Uploader.Properties.Resources.gears_light_bg;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(508, 331);
+            this.ClientSize = new System.Drawing.Size(577, 331);
             this.Controls.Add(this.btnWatchStop);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.btnWatchStart);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnUpload);
-            this.Controls.Add(this.listBoxFilestatus);
+            this.Controls.Add(this.listBoxStatus);
             this.Controls.Add(this.textBoxS3Path);
             this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.textBoxLocalPath);
@@ -173,7 +173,7 @@
         private System.Windows.Forms.TextBox textBoxLocalPath;
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.TextBox textBoxS3Path;
-        private System.Windows.Forms.ListBox listBoxFilestatus;
+        private System.Windows.Forms.ListBox listBoxStatus;
         private System.Windows.Forms.Button btnUpload;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
