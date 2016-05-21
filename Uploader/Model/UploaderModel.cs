@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using FileDropWatcher;
 
 namespace Uploader
 {
@@ -15,7 +16,7 @@ namespace Uploader
         public ReplaySubject<string> messagePasser = new ReplaySubject<string>();
         public BehaviorSubject<string> localPathSubject;
         public BehaviorSubject<string> s3BucketPathSubject;
-        public FileDropWatcher watcher;
+        public Watcher watcher;
         private IDisposable fileWatcherSubscription;
         private TransferUtility directoryTransferUtility;
 
@@ -26,7 +27,7 @@ namespace Uploader
             string s3bucketPath = (string)Properties.Settings.Default[S3BUCKET_PATH_KEY];
             this.localPathSubject = new BehaviorSubject<String>(localPath);
             this.s3BucketPathSubject = new BehaviorSubject<String>(s3bucketPath);
-            this.watcher = new FileDropWatcher(localPath, "");
+            this.watcher = new Watcher(localPath, "");
 
             // Keep default S3 Path in real-time sync with control
             // ToDo: Don't use subject for this
@@ -88,7 +89,7 @@ namespace Uploader
             {
                 this.watcher.Dispose();
             }
-            this.watcher = new FileDropWatcher(newPath, "");
+            this.watcher = new Watcher(newPath, "");
         }
 
         public void UploadToS3(string localPath, string s3BucketPath)

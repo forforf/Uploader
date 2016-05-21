@@ -85,19 +85,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileDropped.cs" />
-    <Compile Include="FileDropWatcher.cs" />
-    <Compile Include="FormUploaderMain.cs">
+    <Compile Include="FileDropWatcher\FileDropped.cs" />
+    <Compile Include="FileDropWatcher\Watcher.cs" />
+    <Compile Include="View\FormUploaderMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormUploaderMain.Designer.cs">
+    <Compile Include="View\FormUploaderMain.Designer.cs">
       <DependentUpon>FormUploaderMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="ObservableFileSystemWatcher.cs" />
+    <Compile Include="FileDropWatcher\ObservableFileSystemWatcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UploaderViewModel.cs" />
-    <EmbeddedResource Include="FormUploaderMain.resx">
+    <Compile Include="Model\UploaderModel.cs" />
+    <EmbeddedResource Include="View\FormUploaderMain.resx">
       <DependentUpon>FormUploaderMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -166,6 +166,7 @@
     <None Include="Resources\forforf-gears.png" />
     <Content Include="Assets\single-gear.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
