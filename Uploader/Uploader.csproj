@@ -142,30 +142,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\cloud-cycle-sm.png" />
-    <Content Include="Assets\cloud-cycle-vsm.png" />
-    <Content Include="Assets\cloud-cycle.png" />
-    <Content Include="Assets\cloud-up-sm.png" />
-    <Content Include="Assets\cloud-up-vsm.png" />
-    <Content Include="Assets\cloud-up.png" />
-    <Content Include="Assets\forforf-gears.png" />
-    <Content Include="Assets\gears-light-bg.png" />
-    <Content Include="Assets\cloud-sync-active.gif" />
     <Content Include="cloud-sync-sm.gif" />
     <Content Include="cloud-sync-sm1.gif" />
-    <None Include="Resources\gears-light-bg1.png" />
-    <None Include="Resources\cloud-sync-sm1.gif" />
-    <None Include="Resources\cloud-sync-sm.gif" />
-    <None Include="Resources\cloud-sync-active.gif" />
-    <None Include="Resources\cloud-cycle-sm.png" />
-    <None Include="Resources\cloud-up-sm1.png" />
-    <None Include="Resources\cloud-cycle-vsm.png" />
-    <None Include="Resources\cloud-up-vsm.png" />
-    <None Include="Resources\cloud-up-sm.png" />
-    <None Include="Resources\cloud-up.png" />
-    <None Include="Resources\gears-light-bg.png" />
-    <None Include="Resources\forforf-gears.png" />
-    <Content Include="Assets\single-gear.png" />
+    <None Include="Resources\cloud_spinner_on.gif" />
+    <None Include="Resources\cloud_spinner_off.png" />
+    <None Include="Resources\cloud_up.png" />
+    <None Include="Resources\gears_light_bg.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

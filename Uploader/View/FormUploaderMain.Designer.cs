@@ -111,7 +111,7 @@
             // 
             // btnWatchStart
             // 
-            this.btnWatchStart.Image = global::Uploader.Properties.Resources.cloud_spinner_on;
+            this.btnWatchStart.Image = global::Uploader.Properties.Resources.cloud_spinner_off;
             this.btnWatchStart.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnWatchStart.Location = new System.Drawing.Point(511, 54);
             this.btnWatchStart.Name = "btnWatchStart";
@@ -132,7 +132,7 @@
             // 
             // btnWatchStop
             // 
-            this.btnWatchStop.Image = global::Uploader.Properties.Resources.cloud_spinner_off;
+            this.btnWatchStop.Image = global::Uploader.Properties.Resources.cloud_spinner_on;
             this.btnWatchStop.Location = new System.Drawing.Point(511, 54);
             this.btnWatchStop.Name = "btnWatchStop";
             this.btnWatchStop.Size = new System.Drawing.Size(53, 36);
