@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Uploader));
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.textBoxLocalPath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
@@ -79,7 +80,7 @@
             // 
             // btnUpload
             // 
-            this.btnUpload.Image = global::Uploader.Properties.Resources.cloud_up_sm1;
+            this.btnUpload.Image = ((System.Drawing.Image)(resources.GetObject("btnUpload.Image")));
             this.btnUpload.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnUpload.Location = new System.Drawing.Point(452, 54);
             this.btnUpload.Name = "btnUpload";
@@ -110,7 +111,7 @@
             // 
             // btnWatchStart
             // 
-            this.btnWatchStart.Image = global::Uploader.Properties.Resources.cloud_cycle_sm;
+            this.btnWatchStart.Image = global::Uploader.Properties.Resources.cloud_spinner_on;
             this.btnWatchStart.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnWatchStart.Location = new System.Drawing.Point(511, 54);
             this.btnWatchStart.Name = "btnWatchStart";
@@ -131,7 +132,7 @@
             // 
             // btnWatchStop
             // 
-            this.btnWatchStop.Image = global::Uploader.Properties.Resources.cloud_sync_sm1;
+            this.btnWatchStop.Image = global::Uploader.Properties.Resources.cloud_spinner_off;
             this.btnWatchStop.Location = new System.Drawing.Point(511, 54);
             this.btnWatchStop.Name = "btnWatchStop";
             this.btnWatchStop.Size = new System.Drawing.Size(53, 36);
@@ -145,7 +146,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.BackgroundImage = global::Uploader.Properties.Resources.gears_light_bg;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(577, 331);
             this.Controls.Add(this.btnWatchStop);

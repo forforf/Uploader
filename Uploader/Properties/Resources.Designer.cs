@@ -63,9 +63,9 @@ namespace Uploader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cloud_cycle_sm {
+        internal static System.Drawing.Bitmap cloud_spinner_off {
             get {
-                object obj = ResourceManager.GetObject("cloud-cycle-sm", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud_spinner_off", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,39 +73,9 @@ namespace Uploader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap cloud_cycle_vsm {
+        internal static System.Drawing.Bitmap cloud_spinner_on {
             get {
-                object obj = ResourceManager.GetObject("cloud-cycle-vsm", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap cloud_sync_active {
-            get {
-                object obj = ResourceManager.GetObject("cloud-sync-active", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap cloud_sync_sm {
-            get {
-                object obj = ResourceManager.GetObject("cloud-sync-sm", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap cloud_sync_sm1 {
-            get {
-                object obj = ResourceManager.GetObject("cloud-sync-sm1", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud_spinner_on", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -115,47 +85,7 @@ namespace Uploader.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap cloud_up {
             get {
-                object obj = ResourceManager.GetObject("cloud-up", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap cloud_up_sm {
-            get {
-                object obj = ResourceManager.GetObject("cloud-up-sm", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap cloud_up_sm1 {
-            get {
-                object obj = ResourceManager.GetObject("cloud-up-sm1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap cloud_up_vsm {
-            get {
-                object obj = ResourceManager.GetObject("cloud-up-vsm", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap forforf_gears {
-            get {
-                object obj = ResourceManager.GetObject("forforf-gears", resourceCulture);
+                object obj = ResourceManager.GetObject("cloud_up", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -165,7 +95,7 @@ namespace Uploader.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap gears_light_bg {
             get {
-                object obj = ResourceManager.GetObject("gears-light-bg", resourceCulture);
+                object obj = ResourceManager.GetObject("gears_light_bg", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -118,37 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="cloud-sync-sm" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cloud-sync-sm.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="cloud_spinner_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cloud-sync-sm1.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="cloud-up-sm" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cloud-up-sm.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="cloud-cycle-vsm" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cloud-cycle-vsm.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="cloud-up-sm1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="cloud_up" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cloud-up-sm1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="cloud-cycle-sm" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cloud-cycle-sm.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="cloud-up-vsm" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cloud-up-vsm.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="gears-light-bg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="gears_light_bg" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\gears-light-bg.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="cloud-up" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cloud-up.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="cloud-sync-active" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cloud-sync-active.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="forforf-gears" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\forforf-gears.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="cloud-sync-sm1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cloud-sync-sm1.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="cloud_spinner_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cloud-cycle-sm.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

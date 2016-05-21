@@ -153,6 +153,7 @@
     <Content Include="Assets\cloud-sync-active.gif" />
     <Content Include="cloud-sync-sm.gif" />
     <Content Include="cloud-sync-sm1.gif" />
+    <None Include="Resources\gears-light-bg1.png" />
     <None Include="Resources\cloud-sync-sm1.gif" />
     <None Include="Resources\cloud-sync-sm.gif" />
     <None Include="Resources\cloud-sync-active.gif" />
