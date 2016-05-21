@@ -66,6 +66,7 @@
             this.textBoxS3Path.Name = "textBoxS3Path";
             this.textBoxS3Path.Size = new System.Drawing.Size(297, 20);
             this.textBoxS3Path.TabIndex = 2;
+            this.textBoxS3Path.TextChanged += new System.EventHandler(this.textBoxS3Path_TextChanged);
             // 
             // listBoxStatus
             // 
