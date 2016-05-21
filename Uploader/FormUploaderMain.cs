@@ -22,29 +22,38 @@ namespace Uploader
     {
         private IDisposable uploaderSubscription;
         private TransferUtility directoryTransferUtility;
-        private IObservable<EventPattern<EventArgs>> browseClickObservable;
         private FileDropWatcher watcher;
         private List<string> statusItems = new List<string>();
+        private UploaderModel uploaderModel; 
 
         public Uploader()
         {
             InitializeComponent();
+            this.uploaderModel = new UploaderModel();
 
             var s3Client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);
-            directoryTransferUtility = new TransferUtility(s3Client);
+            this.directoryTransferUtility = new TransferUtility(s3Client);
         }
 
         private void Uploader_Load(object sender, EventArgs e)
         {
-            StatusBoxUpdate("Starting up ...");
+            this.StatusBoxUpdate("Starting up ...");
 
-            WindowsIdentity id = WindowsIdentity.GetCurrent();
-            string defaultPassword = id.User.AccountDomainSid.Value;
-            Console.WriteLine("PW: " + defaultPassword);
+            this.uploaderModel.localPathSubject.Subscribe(
+                changedLocalPath => textBoxLocalPath.Text = changedLocalPath);
 
-            textBoxLocalPath.Text = (string)Properties.Settings.Default["WatchPath"];
-            textBoxS3Path.Text = (string)Properties.Settings.Default["S3BucketPath"];
+            // Default Paths
+            //textBoxLocalPath.Text = this.uploaderModel.localPath;
+            textBoxS3Path.Text = this.uploaderModel.s3bucketPath;
             StatusBoxUpdate("Ready.");
+
+            this.uploaderModel.messagePasser.Subscribe(
+                message =>
+                {
+                    StatusBoxUpdate(message);
+                },
+                ex => StatusBoxUpdate("Error: " + ex.Message),
+                () => StatusBoxUpdate("Uploader Model messaging stopped."));
         }
 
         private void Uploader_FormClosed(object sender, FormClosedEventArgs e)
@@ -169,19 +178,21 @@ namespace Uploader
             {
 
                 var selectedPath = folderBrowserDialog1.SelectedPath;
-                // This really should be an observable that can be subscribed to
-                // rather than pushing to the text box from here
-                // ... sigh ... just a bit beyond me at the moement.
-                textBoxLocalPath.Text = selectedPath;
-                Properties.Settings.Default["WatchPath"] = selectedPath;
-                Properties.Settings.Default.Save();
+                //// This really should be an observable that can be subscribed to
+                //// rather than pushing to the text box from here
+                //// ... sigh ... just a bit beyond me at the moement.
+                //textBoxLocalPath.Text = selectedPath;
+               
+                //Properties.Settings.Default["WatchPath"] = selectedPath;
+                //Properties.Settings.Default.Save();
 
-                // We changed paths to watch
-                if (this.watcher != null)
-                {
-                    this.watcher.Dispose();
-                }
-                this.watcher = new FileDropWatcher(selectedPath, "");
+                //// We changed paths to watch
+                //if (this.watcher != null)
+                //{
+                //    this.watcher.Dispose();
+                //}
+                //this.watcher = new FileDropWatcher(selectedPath, "");
+                this.uploaderModel.UpdateWatcher(selectedPath);
                 
                 //
                 // The user selected a folder and pressed the OK button.

@@ -45,6 +45,7 @@
             // 
             this.textBoxLocalPath.Location = new System.Drawing.Point(135, 22);
             this.textBoxLocalPath.Name = "textBoxLocalPath";
+            this.textBoxLocalPath.ReadOnly = true;
             this.textBoxLocalPath.Size = new System.Drawing.Size(396, 20);
             this.textBoxLocalPath.TabIndex = 0;
             // 
