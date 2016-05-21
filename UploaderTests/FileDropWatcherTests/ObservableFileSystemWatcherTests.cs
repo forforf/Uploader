@@ -4,6 +4,7 @@ using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Uploader;
+using FileDropWatcher;
 
 [TestFixture]
 public class ObservableFileSystemWatcherTests : FileIntegrationTestsBase
