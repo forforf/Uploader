@@ -38,8 +38,18 @@ namespace Uploader
             this.SetupWatcher();
 
             // Set up S3
-            var s3Client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);
-            this.directoryTransferUtility = new TransferUtility(s3Client);
+            try
+            {
+                var s3Client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);
+                this.directoryTransferUtility = new TransferUtility(s3Client);
+            } catch (Exception ex)
+            {
+                this.messagePasser.OnNext("Failed to connect to AWS");
+                System.Windows.Forms.MessageBox
+                    .Show("Unable to connect to AWS. This program uses an aws credential file profile named 'Uploader'. See http://docs.aws.amazon.com/sdk-for-net/v2/developer-guide/net-dg-config-creds.html");
+            }
+            
+            
 
             this.messagePasser.OnNext("Uploader Model Initialized");
         }
