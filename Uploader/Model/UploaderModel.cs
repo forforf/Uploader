@@ -4,7 +4,10 @@ using System;
 using System.IO;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using FileDropWatcher;
+using UploadWatchers;
+using System.ComponentModel;
+using Uploader.UploadWatchers;
+using System.Threading;
 
 namespace Uploader
 {
@@ -16,7 +19,7 @@ namespace Uploader
         public ReplaySubject<string> messagePasser = new ReplaySubject<string>();
         public BehaviorSubject<string> localPathSubject;
         public BehaviorSubject<string> s3BucketPathSubject;
-        public Watcher watcher;
+        public WatcherObservable watcher;
         private IDisposable fileWatcherSubscription;
         private TransferUtility directoryTransferUtility;
 
@@ -24,10 +27,16 @@ namespace Uploader
         {
             // Set Default Paths and set the initial value to emit on the Subject
             string localPath = (string)Properties.Settings.Default[WATCH_PATH_KEY];
+            if (!Directory.Exists(localPath))
+            {
+                localPath = Directory.GetCurrentDirectory();
+                Properties.Settings.Default[WATCH_PATH_KEY] = localPath;
+                Properties.Settings.Default.Save();
+            }
             string s3bucketPath = (string)Properties.Settings.Default[S3BUCKET_PATH_KEY];
             this.localPathSubject = new BehaviorSubject<String>(localPath);
             this.s3BucketPathSubject = new BehaviorSubject<String>(s3bucketPath);
-            this.watcher = new Watcher(localPath, "");
+            
 
             // Keep default S3 Path in real-time sync with control
             // ToDo: Don't use subject for this
@@ -46,7 +55,7 @@ namespace Uploader
             {
                 this.messagePasser.OnNext("Failed to connect to AWS");
                 System.Windows.Forms.MessageBox
-                    .Show("Unable to connect to AWS. This program uses an aws credential file profile named 'Uploader'. See http://docs.aws.amazon.com/sdk-for-net/v2/developer-guide/net-dg-config-creds.html");
+                    .Show("Unable to connect to AWS. This program uses an aws credential file profile named 'Uploader'. See http://docs.aws.amazon.com/sdk-for-net/v2/developer-guide/net-dg-config-creds.html.  " + ex);
             }
             
             
@@ -99,18 +108,37 @@ namespace Uploader
             {
                 this.watcher.Dispose();
             }
-            this.watcher = new Watcher(newPath, "");
+            FileSystemWatcher fsw = new FileSystemWatcher();
+            FileSystemWatcherAdapter fswAdapter = new FileSystemWatcherAdapter(fsw);
+             
+            this.watcher = new WatcherObservable(fswAdapter);
+            this.watcher.Path = newPath;
         }
 
         public void UploadToS3(string localPath, string s3BucketPath)
         {
+            FileAttributes attr = File.GetAttributes(localPath);
             this.messagePasser.OnNext("Uploading from: " + localPath + " to: " + s3BucketPath);
-            //directoryTransferUtility.UploadDirectory(localPath, 
-            //    s3BucketPath);
-            directoryTransferUtility.UploadDirectory(localPath,
-                                             s3BucketPath,
-                                             "*.*",
-                                             SearchOption.AllDirectories);
+
+            // We can get notified of changes to the file before the file has been unlocked
+            // So we wait until the file is readable
+            // Note there is still a chance another process can sneak in and grab the file, but this should work for most cases
+
+            var fs = WaitForFile(localPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            if (fs == null)
+            {
+                throw new ArgumentNullException("Timed out trying to open " + localPath);
+            }
+            fs.Dispose();
+
+            if (attr.HasFlag(FileAttributes.Directory))
+                directoryTransferUtility.UploadDirectory(localPath,
+                                 s3BucketPath,
+                                 "*.*",
+                                 SearchOption.AllDirectories);
+            else // it's a file
+                directoryTransferUtility.Upload(localPath, s3BucketPath);
+
 
             this.messagePasser.OnNext("Upload completed");
         }
@@ -124,11 +152,14 @@ namespace Uploader
 
             this.UpdateWatcher(watchPath);
 
-            var watcherObservable = this.watcher.Dropped
-                // Emit Parent Directory
-                .Select(fileDropped => (string)fileDropped.ParentPath);
+            // var watcherObservable = this.watcher.Dropped
+            //    // Emit Parent Directory
+            //    .Select(fileDropped => (string)fileDropped.ParentPath);
 
-            this.fileWatcherSubscription = watcherObservable.Subscribe(
+            // TODO: Files to ignore should be user configurable
+            this.fileWatcherSubscription = this.watcher.GetObservable()
+                .Where(path => (!Path.GetExtension(path).EndsWith("tm")))
+                .Subscribe(
                     path =>
                     {
                         string s3Path = (string)Properties.Settings.Default[S3BUCKET_PATH_KEY];
@@ -137,6 +168,30 @@ namespace Uploader
                     },
                     ex => Console.WriteLine("OnError: {0}", ex.Message),
                     () => Console.WriteLine("OnCompleted"));
+        }
+
+
+        private FileStream WaitForFile(string fullPath, FileMode mode, FileAccess access, FileShare share)
+        {
+            for (int numTries = 0; numTries < 10; numTries++)
+            {
+                FileStream fs = null;
+                try
+                {
+                    fs = new FileStream(fullPath, mode, access, share);
+                    return fs;
+                }
+                catch (IOException)
+                {
+                    if (fs != null)
+                    {
+                        fs.Dispose();
+                    }
+                    Thread.Sleep(50);
+                }
+            }
+
+            return null;
         }
     }
 }

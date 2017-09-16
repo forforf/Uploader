@@ -49,6 +49,10 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AWSSDK.Core">
       <HintPath>..\packages\AWSSDK.Core.3.2.3.1-beta\lib\net45\AWSSDK.Core.dll</HintPath>
@@ -85,15 +89,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileDropWatcher\FileDropped.cs" />
-    <Compile Include="FileDropWatcher\Watcher.cs" />
+    <Compile Include="UploadWatchers\IWatcherObservable.cs" />
+    <Compile Include="UploadWatchers\FileSystemWatcherAdapter .cs" />
+    <Compile Include="UploadWatchers\IFileSystemWatcher.cs" />
+    <Compile Include="UploadWatchers\EventObservableFactory.cs" />
+    <Compile Include="UploadWatchers\WatcherObservable.cs" />
     <Compile Include="View\FormUploaderMain.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="View\FormUploaderMain.Designer.cs">
       <DependentUpon>FormUploaderMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="FileDropWatcher\ObservableFileSystemWatcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\UploaderModel.cs" />
@@ -110,6 +116,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -120,9 +127,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

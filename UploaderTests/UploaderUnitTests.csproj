@@ -100,10 +100,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="FileDropWatcherTests\ObservableFileSystemWatcherTests.cs" />
+    <Compile Include="UploaderWatcherTests\WatcherObservableTests.cs" />
+    <Compile Include="UploaderWatcherTests\WatcherComponentTests.cs" />
+    <Compile Include="UploaderWatcherTests\WatcherComponentMock.cs" />
+    <Compile Include="UploaderWatcherTests\EventObservableFactoryTest.cs" />
+    <Compile Include="UploaderWatcherTests\EventMock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="FileDropWatcherTests\FileDropWatcherTests.cs" />
-    <Compile Include="FileDropWatcherTests\FileIntegrationTestsBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Uploader\Uploader.csproj">
