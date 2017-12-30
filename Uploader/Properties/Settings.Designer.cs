@@ -38,12 +38,12 @@ namespace Uploader.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("forforf-uploader")]
-        public string S3BucketPath {
+        public string S3Path {
             get {
-                return ((string)(this["S3BucketPath"]));
+                return ((string)(this["S3Path"]));
             }
             set {
-                this["S3BucketPath"] = value;
+                this["S3Path"] = value;
             }
         }
     }

@@ -1,65 +1,39 @@
-﻿using Amazon.S3;
-using Amazon.S3.Transfer;
-using System;
+﻿using System;
 using System.IO;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using UploadWatchers;
-using System.ComponentModel;
-using Uploader.UploadWatchers;
-using System.Threading;
+using Uploader.Model;
 
 namespace Uploader
 {
-    class UploaderModel : IDisposable
+    public class UploaderModel : IDisposable
     {
-        public const string WATCH_PATH_KEY = "WatchPath";
-        public const string S3BUCKET_PATH_KEY = "S3BucketPath";
-        //public string s3bucketPath { get; set; }
-        public ReplaySubject<string> messagePasser = new ReplaySubject<string>();
+        public ReplaySubject<string> messagePasser;
         public BehaviorSubject<string> localPathSubject;
-        public BehaviorSubject<string> s3BucketPathSubject;
-        public WatcherObservable watcher;
-        private IDisposable fileWatcherSubscription;
-        private TransferUtility directoryTransferUtility;
+        public BehaviorSubject<string> s3PathSubject;
+        private FilePathModel filePathModel;
+        private S3PathModel s3PathModel;
+        private IDisposable fileWatcherSubscription; //used to keep subscription from being GC'd
+        private ISettings settings;
 
-        public UploaderModel()
+        // TODO migrate to the DI constructor
+        public UploaderModel(ISettings _settings,
+            //BehaviorSubject<string> _localPathSubject, 
+            FilePathModel _filePathModel,
+            S3PathModel _s3PathModel,
+            ReplaySubject<string> _messagePasser)
         {
-            // Set Default Paths and set the initial value to emit on the Subject
-            string localPath = (string)Properties.Settings.Default[WATCH_PATH_KEY];
-            if (!Directory.Exists(localPath))
-            {
-                localPath = Directory.GetCurrentDirectory();
-                Properties.Settings.Default[WATCH_PATH_KEY] = localPath;
-                Properties.Settings.Default.Save();
-            }
-            string s3bucketPath = (string)Properties.Settings.Default[S3BUCKET_PATH_KEY];
-            this.localPathSubject = new BehaviorSubject<String>(localPath);
-            this.s3BucketPathSubject = new BehaviorSubject<String>(s3bucketPath);
-            
-
-            // Keep default S3 Path in real-time sync with control
-            // ToDo: Don't use subject for this
-            s3BucketPathSubject.Subscribe(
-                s3Path => Properties.Settings.Default[S3BUCKET_PATH_KEY] = s3Path);
+            this.settings = _settings;
+            this.messagePasser = _messagePasser;
+            this.filePathModel = _filePathModel;
+            this.s3PathModel = _s3PathModel;
+            this.localPathSubject = this.filePathModel.localPathSubject;
+            this.s3PathSubject = this.s3PathModel.s3PathSubject;
 
             // Set up File Watcher
+            this.UpdateWatcher(this.settings.WatchPath);
             this.SetupWatcher();
-
-            // Set up S3
-            try
-            {
-                var s3Client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);
-                this.directoryTransferUtility = new TransferUtility(s3Client);
-            } catch (Exception ex)
-            {
-                this.messagePasser.OnNext("Failed to connect to AWS");
-                System.Windows.Forms.MessageBox
-                    .Show("Unable to connect to AWS. This program uses an aws credential file profile named 'Uploader'. See http://docs.aws.amazon.com/sdk-for-net/v2/developer-guide/net-dg-config-creds.html.  " + ex);
-            }
-            
-            
-
+     
             this.messagePasser.OnNext("Uploader Model Initialized");
         }
 
@@ -69,100 +43,66 @@ namespace Uploader
             {
                 fileWatcherSubscription.Dispose();
             }
-            if (this.watcher != null)
+            if (this.filePathModel != null)
             {
-                this.watcher.Dispose();
+                this.filePathModel.Dispose();
             }
         }
 
         public void ToggleWatch()
         {
-            if (this.watcher == null)
-            {
-                this.messagePasser.OnNext("Setting up watcher ...");
-                SetupWatcher();
-                this.messagePasser.OnNext("Setup complete.");
-            }
-
-            bool watchIsOn = this.watcher.IsWatching();
-            if (watchIsOn)
-            {
-
-                this.watcher.Stop();
-                this.messagePasser.OnNext("Watcher Stopped");
-            }
-            else
-            {
-                this.watcher.Start();
-                this.messagePasser.OnNext("Watching.");
-            };
+            this.filePathModel.ToggleWatch();
         }
 
         public void UpdateWatcher(String newPath)
         {
-            this.localPathSubject.OnNext(newPath);
-            Properties.Settings.Default[WATCH_PATH_KEY] = newPath;
-            Properties.Settings.Default.Save();
-         
-            if (this.watcher != null)
-            {
-                this.watcher.Dispose();
-            }
-            FileSystemWatcher fsw = new FileSystemWatcher();
-            FileSystemWatcherAdapter fswAdapter = new FileSystemWatcherAdapter(fsw);
-             
-            this.watcher = new WatcherObservable(fswAdapter);
-            this.watcher.Path = newPath;
+            this.filePathModel.UpdateWatcher(newPath);
         }
 
         public void UploadToS3(string localPath, string s3BucketPath)
         {
-            FileAttributes attr = File.GetAttributes(localPath);
-            this.messagePasser.OnNext("Uploading from: " + localPath + " to: " + s3BucketPath);
 
-            // We can get notified of changes to the file before the file has been unlocked
-            // So we wait until the file is readable
-            // Note there is still a chance another process can sneak in and grab the file, but this should work for most cases
+            var pathObj = new UploaderPath(localPath);
 
-            var fs = WaitForFile(localPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
-            if (fs == null)
+            this.messagePasser.OnNext("Uploading from: " + pathObj.FullPath + " to: " + s3BucketPath);
+
+            if (pathObj.IsDirectory())
             {
-                throw new ArgumentNullException("Timed out trying to open " + localPath);
-            }
-            fs.Dispose();
-
-            if (attr.HasFlag(FileAttributes.Directory))
-                directoryTransferUtility.UploadDirectory(localPath,
+                this.s3PathModel.UploadDirectory(pathObj.FullPath,
                                  s3BucketPath,
                                  "*.*",
                                  SearchOption.AllDirectories);
-            else // it's a file
-                directoryTransferUtility.Upload(localPath, s3BucketPath);
 
+                this.messagePasser.OnNext("Uploaded all files in directory");
+            }
+            if (pathObj.IsFile())
+            {
+                WaitForFile(pathObj.FullPath);
+                this.s3PathModel.UploadFile(pathObj.FullPath, s3BucketPath);
+                this.messagePasser.OnNext("Uploaded file");
+            }
 
-            this.messagePasser.OnNext("Upload completed");
+            if (!pathObj.IsDirectory() && !pathObj.IsFile())
+            {
+                this.messagePasser.OnNext($"Unable to locate file/directory: {pathObj.FullPath}");
+            }            
         }
 
-
-    // Private Methods
+        public Boolean IsWatching()
+        {
+           return this.filePathModel.IsWatching();
+        }
 
         private void SetupWatcher()
         {
-            string watchPath = (string)Properties.Settings.Default[WATCH_PATH_KEY];
-
-            this.UpdateWatcher(watchPath);
-
-            // var watcherObservable = this.watcher.Dropped
-            //    // Emit Parent Directory
-            //    .Select(fileDropped => (string)fileDropped.ParentPath);
 
             // TODO: Files to ignore should be user configurable
-            this.fileWatcherSubscription = this.watcher.GetObservable()
+            this.fileWatcherSubscription = this.filePathModel.GetObservable()
                 .Where(path => (!Path.GetExtension(path).EndsWith("tm")))
                 .Subscribe(
                     path =>
                     {
-                        string s3Path = (string)Properties.Settings.Default[S3BUCKET_PATH_KEY];
+                        string s3Path = this.settings.S3Path;
                         this.messagePasser.OnNext("Uploading " + path + " to " + s3Path + " ...");
                         UploadToS3(path, s3Path);
                     },
@@ -170,28 +110,18 @@ namespace Uploader
                     () => Console.WriteLine("OnCompleted"));
         }
 
-
-        private FileStream WaitForFile(string fullPath, FileMode mode, FileAccess access, FileShare share)
+        private void WaitForFile(string localPath)
         {
-            for (int numTries = 0; numTries < 10; numTries++)
-            {
-                FileStream fs = null;
-                try
-                {
-                    fs = new FileStream(fullPath, mode, access, share);
-                    return fs;
-                }
-                catch (IOException)
-                {
-                    if (fs != null)
-                    {
-                        fs.Dispose();
-                    }
-                    Thread.Sleep(50);
-                }
-            }
+            // We can get notified of changes to the file before the file has been unlocked
+            // So we wait until the file is readable
+            // Note there is still a chance another process can sneak in and grab the file, but this should work for most cases
 
-            return null;
+            var fs = this.filePathModel.WaitForFile(localPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            if (fs == null)
+            {
+                throw new ArgumentNullException("Timed out trying to open " + localPath);
+            }
+            fs.Dispose();
         }
     }
 }

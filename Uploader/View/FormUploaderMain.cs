@@ -10,10 +10,10 @@ namespace Uploader
         private List<string> statusItems = new List<string>();
         private UploaderModel uploaderModel; 
 
-        public Uploader()
+        public Uploader(UploaderModel _uploaderModel)
         {
             InitializeComponent();
-            this.uploaderModel = new UploaderModel();
+            this.uploaderModel = _uploaderModel;
 
             //var s3Client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);
             //this.directoryTransferUtility = new TransferUtility(s3Client);
@@ -27,7 +27,7 @@ namespace Uploader
             this.uploaderModel.localPathSubject.Subscribe(
                 changedLocalPath => textBoxLocalPath.Text = changedLocalPath);
 
-            this.uploaderModel.s3BucketPathSubject.Subscribe(
+            this.uploaderModel.s3PathSubject.Subscribe(
                 changedS3BucketPath => textBoxS3Path.Text = changedS3BucketPath);
 
             StatusBoxUpdate("Ready.");
@@ -65,7 +65,7 @@ namespace Uploader
             this.uploaderModel.ToggleWatch();
 
             // TODO: Make into observable
-            btnWatchStop.Visible = this.uploaderModel.watcher.IsWatching();
+            btnWatchStop.Visible = this.uploaderModel.IsWatching();
             btnWatchStart.Visible = !btnWatchStop.Visible;
         }
         
@@ -97,7 +97,7 @@ namespace Uploader
 
         private void textBoxS3Path_TextChanged(object sender, EventArgs e)
         {
-            this.uploaderModel.s3BucketPathSubject.OnNext(textBoxS3Path.Text);
+            this.uploaderModel.s3PathSubject.OnNext(textBoxS3Path.Text);
         }
         
     }

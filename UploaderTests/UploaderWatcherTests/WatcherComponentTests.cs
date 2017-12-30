@@ -1,6 +1,5 @@
 ﻿using System;
 using NUnit.Framework;
-using UploadWatchers;
 using System.IO;
 
 namespace UploadeWatcherTests

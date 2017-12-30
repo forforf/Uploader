@@ -5,7 +5,7 @@
     <Setting Name="WatchPath" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\temp</Value>
     </Setting>
-    <Setting Name="S3BucketPath" Type="System.String" Scope="User">
+    <Setting Name="S3Path" Type="System.String" Scope="User">
       <Value Profile="(Default)">forforf-uploader</Value>
     </Setting>
   </Settings>
