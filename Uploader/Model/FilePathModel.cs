@@ -12,29 +12,29 @@ using UploadWatchers;
 
 namespace Uploader.Model
 {
-    public class FilePathModel : IDisposable
+    public class FilePathModel : IFilePathModel, IDisposable
     {
 
-        private ISettings settings;
-        public ReplaySubject<string> messagePasser;
-        public BehaviorSubject<string> localPathSubject;
+        public ReplaySubject<String> MessagePasser { get; }
+        public BehaviorSubject<String> LocalPathSubject { get; }
         private IWatcherObservable watcher;
+        private ISettings settings;
 
         public FilePathModel(ISettings _settings,
             BehaviorSubject<string> _localPathSubject,
             ReplaySubject<string> _messagePasser)
         {
             this.settings = _settings;
-            this.messagePasser = _messagePasser;
+            this.MessagePasser = _messagePasser;
 
-            this.localPathSubject = _localPathSubject;
+            this.LocalPathSubject = _localPathSubject;
 
 
             // Set up File Watcher
-            this.UpdateWatcher(this.settings.WatchPath);
-            //this.SetupWatcher();
+            this.SetupWatcher();
+            this.ChangeWatchPath(this.settings.WatchPath);
 
-            this.messagePasser.OnNext("FilePathModel Initialized");
+            this.MessagePasser.OnNext("FilePathModel Initialized");
         }
 
         public void Dispose()
@@ -49,9 +49,9 @@ namespace Uploader.Model
         {
             if (this.watcher == null)
             {
-                this.messagePasser.OnNext("Setting up watcher ...");
+                this.MessagePasser.OnNext("Setting up watcher ...");
                 //SetupWatcher();
-                this.messagePasser.OnNext("Setup complete.");
+                this.MessagePasser.OnNext("Setup complete.");
             }
 
             bool watchIsOn = this.watcher.IsWatching();
@@ -59,29 +59,27 @@ namespace Uploader.Model
             {
 
                 this.watcher.Stop();
-                this.messagePasser.OnNext("Watcher Stopped");
+                this.MessagePasser.OnNext("Watcher Stopped");
             }
             else
             {
                 this.watcher.Start();
-                this.messagePasser.OnNext("Watching.");
+                this.MessagePasser.OnNext("Watching.");
             };
         }
 
-        public void UpdateWatcher(String newPath)
+        public void ChangeWatchPath(String newPath)
         {
-            this.localPathSubject.OnNext(newPath);
-            this.settings.WatchPath = newPath;
-
-            if (this.watcher != null)
+            
+            if (Directory.Exists(newPath) || File.Exists(newPath))
             {
-                this.watcher.Dispose();
+                this.watcher.Path = newPath;
+                this.settings.WatchPath = newPath;
+                this.LocalPathSubject.OnNext(newPath);
+            } else
+            {
+                throw new FileNotFoundException($"Unable to find file or directory: {newPath}");
             }
-            FileSystemWatcher fsw = new FileSystemWatcher();
-            FileSystemWatcherAdapter fswAdapter = new FileSystemWatcherAdapter(fsw);
-
-            this.watcher = new WatcherObservable(fswAdapter);
-            this.watcher.Path = newPath;
         }
 
         public Boolean IsWatching()
@@ -94,14 +92,21 @@ namespace Uploader.Model
             return this.watcher.GetObservable();
         }
 
-        public FileStream WaitForFile(string fullPath, FileMode mode, FileAccess access, FileShare share)
+        public FileStream WaitForFile(string fullPath)
         {
-            for (int numTries = 0; numTries < 10; numTries++)
+            const int TIMEOUT_MS = 20000;
+            const int RETRY_DELAY_MS = 100;
+            const int TRIES = TIMEOUT_MS / RETRY_DELAY_MS;
+            const FileMode FILEMODE = FileMode.Open;
+            const FileAccess FILEACCESS = FileAccess.ReadWrite;
+            const FileShare FILESHARE = FileShare.None;
+
+            for (int numTries = 0; numTries < TRIES; numTries++)
             {
                 FileStream fs = null;
                 try
                 {
-                    fs = new FileStream(fullPath, mode, access, share);
+                    fs = new FileStream(fullPath, FILEMODE, FILEACCESS, FILESHARE);
                     return fs;
                 }
                 catch (IOException)
@@ -110,11 +115,22 @@ namespace Uploader.Model
                     {
                         fs.Dispose();
                     }
-                    Thread.Sleep(50);
+                    Thread.Sleep(RETRY_DELAY_MS);
                 }
             }
 
             return null;
+        }
+
+        private void SetupWatcher()
+        {
+            if (this.watcher == null)
+            {
+                FileSystemWatcher fsw = new FileSystemWatcher();
+                FileSystemWatcherAdapter fswAdapter = new FileSystemWatcherAdapter(fsw);
+
+                this.watcher = new WatcherObservable(fswAdapter);
+            }
         }
     }
 }

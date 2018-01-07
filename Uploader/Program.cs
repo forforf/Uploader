@@ -26,9 +26,6 @@ namespace Uploader
             var messagePasser = new ReplaySubject<string>();
             AmazonS3Client s3Client;
             TransferUtility directoryTransferUtility;
-
-
-
             UploaderModel uploaderModel = null;
 
             try

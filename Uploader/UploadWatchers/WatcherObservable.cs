@@ -8,6 +8,7 @@ using UploadWatchers;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 
 namespace Uploader.UploadWatchers
 {
@@ -15,9 +16,10 @@ namespace Uploader.UploadWatchers
     {
         private IFileSystemWatcher watcher;
 
-        public String Path {
+        public String Path
+        {
             get
-            {               
+            {
                 return watcher.Path;
             }
             set
@@ -26,7 +28,8 @@ namespace Uploader.UploadWatchers
             }
         }
 
-        public WatcherObservable(IFileSystemWatcher fileSystemWatcherAdapter) {
+        public WatcherObservable(IFileSystemWatcher fileSystemWatcherAdapter)
+        {
             this.watcher = fileSystemWatcherAdapter;
             this.watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
            | NotifyFilters.FileName | NotifyFilters.DirectoryName;
@@ -61,21 +64,22 @@ namespace Uploader.UploadWatchers
 
             return creates
                 .Merge(changed)
-                .Merge(renames);
+                .Merge(renames)
+                .Distinct();
         }
 
         private IObservable<String> observableFromFileEvent(String eventName)
         {
             return EventHandlerFactory
                 .GetEventObservable(watcher, eventName)
-                .Select(o => ((FileSystemEventArgs)o.EventArgs).FullPath); ;
+                .Select(o => ((FileSystemEventArgs)o.EventArgs).FullPath);
         }
 
         private IObservable<String> observableFromRenameEvent(String eventName)
         {
             return EventHandlerFactory
                 .GetEventObservable(watcher, eventName)
-                .Select(o => ((RenamedEventArgs)o.EventArgs).FullPath); ;
+                .Select(o => ((RenamedEventArgs)o.EventArgs).FullPath);
         }
     }
 }

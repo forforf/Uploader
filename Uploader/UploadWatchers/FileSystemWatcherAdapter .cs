@@ -71,14 +71,7 @@ namespace UploadWatchers
             };
         }
 
-        //public event EventHandler<FileSystemEventArgs> ChangedOld
-        //{
-        //    add { this.AddChanged(value); }
-        //    remove { this.RemoveChanged(value); }
-        //}
-
         // Constructor
-        // TODO: Need to inject something (so it can be tested) that abstracts events
         public FileSystemWatcherAdapter(FileSystemWatcher fsw)
         {
 

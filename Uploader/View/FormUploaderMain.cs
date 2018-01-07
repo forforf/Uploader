@@ -24,10 +24,10 @@ namespace Uploader
             this.StatusBoxUpdate("Starting up ...");
 
             // Sync Model to text box controls
-            this.uploaderModel.localPathSubject.Subscribe(
+            this.uploaderModel.LocalPathSubject.Subscribe(
                 changedLocalPath => textBoxLocalPath.Text = changedLocalPath);
 
-            this.uploaderModel.s3PathSubject.Subscribe(
+            this.uploaderModel.S3PathSubject.Subscribe(
                 changedS3BucketPath => textBoxS3Path.Text = changedS3BucketPath);
 
             StatusBoxUpdate("Ready.");
@@ -97,7 +97,7 @@ namespace Uploader
 
         private void textBoxS3Path_TextChanged(object sender, EventArgs e)
         {
-            this.uploaderModel.s3PathSubject.OnNext(textBoxS3Path.Text);
+            this.uploaderModel.S3PathSubject.OnNext(textBoxS3Path.Text);
         }
         
     }
