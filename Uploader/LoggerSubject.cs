@@ -25,7 +25,6 @@ namespace Uploader.Model
         protected override void Write(LogEventInfo logEvent)
         {
             string logMessage = this.Layout.Render(logEvent);
-            Console.WriteLine("YAYAYAYAYAYAYAY");
             this.Subject.OnNext(logMessage);
         }
     }

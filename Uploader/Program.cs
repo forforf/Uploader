@@ -22,31 +22,47 @@ namespace Uploader
         static void Main()
         {
 
-            LogManager.ThrowExceptions = true;
+            //LogManager.ThrowExceptions = true;
+
+            // Custom NLog Logger that publishes logs to a Subject
+            // We then inject that subject into the App
+            // Voila, the App has access to log data.
+            // see also App.config
             Target.Register<LoggerSubject>("LoggerSubject");
             Logger logger = LogManager.GetLogger("Main");
-            logger.Debug("This is a test debug message");
-            var x = LogManager.Configuration;
-            var loggerTarget = (LoggerSubject)LogManager.Configuration.FindTargetByName("subject");
+            var subjectLoggerTarget = (LoggerSubject)LogManager.Configuration.FindTargetByName("subject");
 
             // Set up Dependencies
             Settings settings = new Settings();
             string watchPath = settings.WatchPath;
             var localPathSubject = Model.FilePathSubjectFactory.Make(watchPath, Model.FilePathSubjectFactory.GetCurrentDirectory);
             var s3PathSubject = new BehaviorSubject<String>(settings.S3Path);
-            var messagePasser = loggerTarget.Subject; // new ReplaySubject<string>();
-            AmazonS3Client s3Client;
-            TransferUtility directoryTransferUtility;
+            var messagePasser = subjectLoggerTarget.Subject;
+            AmazonS3Client s3Client = null;
+            TransferUtility directoryTransferUtility = null;
             UploaderModel uploaderModel = null;
 
+            logger.Info("Setting up S3");
+            try
+            {
+                s3Client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);
+                directoryTransferUtility = new TransferUtility(s3Client);
+            }
+            catch (Exception ex)
+            {
+                MessageBox
+                    .Show($"Unable to connect to AWS. This program uses an aws credential file profile named 'Uploader'. See http://docs.aws.amazon.com/sdk-for-net/v2/developer-guide/net-dg-config-creds.html.\n{ex}");
+                logger.Info("Failed to connect to AWS");
+            }
+            logger.Info("AWS S3Client initialized");
+
+            logger.Info("Setting Up Uploader Models");
             try
             {
                 // Set up Underlying Models
                 var filePathModel = new Model.FilePathModel(settings, localPathSubject, messagePasser);
-                s3Client = new AmazonS3Client(Amazon.RegionEndpoint.USEast1);
-                directoryTransferUtility = new TransferUtility(s3Client);
                 var s3PathModel = new Model.S3PathModel(settings, s3PathSubject, messagePasser, directoryTransferUtility);
-                messagePasser.OnNext("AWS S3Client initialized");
+
                 uploaderModel = new UploaderModel(
                         _settings: settings,
                         _filePathModel: filePathModel,
@@ -57,15 +73,14 @@ namespace Uploader
             {
                 System.Windows.Forms.MessageBox
                     .Show("Unable to connect to AWS. This program uses an aws credential file profile named 'Uploader'. See http://docs.aws.amazon.com/sdk-for-net/v2/developer-guide/net-dg-config-creds.html.  " + ex);
-                messagePasser.OnNext("Failed to connect to AWS");
+                logger.Info("Failed setting up Uploader Models");
             }
-
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             if (uploaderModel == null)
             {
-                System.Windows.Forms.MessageBox
+                MessageBox
                     .Show("Unable to initialize Uploader Model");
             } else {
                 Application.Run(new Uploader(uploaderModel));
