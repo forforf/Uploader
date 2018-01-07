@@ -114,6 +114,7 @@
     <Compile Include="Model\FilePathSubjectFactory.cs" />
     <Compile Include="Model\IFilePathModel.cs" />
     <Compile Include="Model\IS3PathModel.cs" />
+    <Compile Include="LoggerSubject.cs" />
     <Compile Include="Model\S3PathModel.cs" />
     <Compile Include="Model\SettingKey.cs" />
     <Compile Include="Model\ISettings.cs" />

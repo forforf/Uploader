@@ -1,5 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Transfer;
+using NLog;
+using NLog.Targets;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +9,7 @@ using System.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Uploader.Model;
 
 namespace Uploader
 {
@@ -18,12 +21,20 @@ namespace Uploader
         [STAThread]
         static void Main()
         {
+
+            LogManager.ThrowExceptions = true;
+            Target.Register<LoggerSubject>("LoggerSubject");
+            Logger logger = LogManager.GetLogger("Main");
+            logger.Debug("This is a test debug message");
+            var x = LogManager.Configuration;
+            var loggerTarget = (LoggerSubject)LogManager.Configuration.FindTargetByName("subject");
+
             // Set up Dependencies
             Settings settings = new Settings();
             string watchPath = settings.WatchPath;
             var localPathSubject = Model.FilePathSubjectFactory.Make(watchPath, Model.FilePathSubjectFactory.GetCurrentDirectory);
             var s3PathSubject = new BehaviorSubject<String>(settings.S3Path);
-            var messagePasser = new ReplaySubject<string>();
+            var messagePasser = loggerTarget.Subject; // new ReplaySubject<string>();
             AmazonS3Client s3Client;
             TransferUtility directoryTransferUtility;
             UploaderModel uploaderModel = null;
