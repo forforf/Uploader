@@ -1,4 +1,5 @@
 ﻿using Amazon.S3.Transfer;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,30 +13,27 @@ namespace Uploader.Model
 {
     public class S3PathModel : IS3PathModel
     {
-        public ReplaySubject<String> MessagePasser { get; }
+
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         public BehaviorSubject<String> S3PathSubject { get; }
         private TransferUtility directoryTransferUtility;
         private ISettings settings;
 
-        // TODO migrate to the DI constructor
         public S3PathModel(ISettings _settings,
             BehaviorSubject<String> _s3PathSubject,
-            ReplaySubject<String> _messagePasser,
             TransferUtility _directoryTransferUtility)
         {
             this.settings = _settings;
-            this.MessagePasser = _messagePasser;
             this.S3PathSubject = _s3PathSubject;
             this.directoryTransferUtility = _directoryTransferUtility;
-
 
             // Keep default S3 Path in real-time sync with control
             // ToDo: Don't use subject for this
             S3PathSubject.Subscribe(
                 s3Path => this.settings.S3Path = s3Path);
 
-
-            this.MessagePasser.OnNext("S3PathModel Initialized");
+            logger.Info("S3PathModel Initialized");
         }
 
         public void Dispose()
@@ -54,18 +52,19 @@ namespace Uploader.Model
                                     "*.*",
                                     SearchOption.AllDirectories);
 
-                //this.messagePasser.OnNext("Uploaded all files in directory");
+                logger.Debug("Uploaded all files in directory");
             }
             if (pathObj.IsFile())
             {
                 this.UploadFile(pathObj.FullPath, s3BucketPath);
-                //this.messagePasser.OnNext("Uploaded file");
+                logger.Debug($"Uploaded file {pathObj.FullPath}");
             }
 
             if (!pathObj.IsDirectory() && !pathObj.IsFile())
             {
-                throw new FileNotFoundException($"Unable to locate file/directory: {pathObj.FullPath}");
-                //this.messagePasser.OnNext($"Unable to locate file/directory: {pathObj.FullPath}");
+                String msg = $"Unable to locate file/directory: {pathObj.FullPath}";
+                logger.Error(msg);
+                throw new FileNotFoundException($"Unable to locate file/directory: {msg}");
             }
         }
 
@@ -87,11 +86,13 @@ namespace Uploader.Model
             const int RETRY_INTERVAL = 100;
             while (true)
             {
-                //// We only want to wait for files that exist. If a file doesn't exist, that'a a problem.
-                //if (!File.Exists(fileName)) {
-                //    Console.WriteLine("Improperly handled error");
-                //    throw new FileNotFoundException($"Could not find file: {fileName}");
-                //}
+                // We only want to wait for files that exist. If a file doesn't exist, that'a a problem.
+                if (!File.Exists(fileName))
+                {
+                    String msg = $"Could not find file: {fileName}";
+                    logger.Error(msg);
+                    throw new FileNotFoundException(msg);
+                }
                 try
                 {
                     using (FileStream Fs = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.None, 100))

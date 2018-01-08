@@ -10,6 +10,8 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Uploader.Model;
+using Uploader.UploadWatchers;
+using UploadWatchers;
 
 namespace Uploader
 {
@@ -42,6 +44,10 @@ namespace Uploader
             TransferUtility directoryTransferUtility = null;
             UploaderModel uploaderModel = null;
 
+            FileSystemWatcher fsw = new FileSystemWatcher();
+            FileSystemWatcherAdapter fswAdapter = new FileSystemWatcherAdapter(fsw);
+            WatcherObservable watcherObservable = new WatcherObservable(fswAdapter);
+
             logger.Info("Setting up S3");
             try
             {
@@ -60,8 +66,8 @@ namespace Uploader
             try
             {
                 // Set up Underlying Models
-                var filePathModel = new Model.FilePathModel(settings, localPathSubject, messagePasser);
-                var s3PathModel = new Model.S3PathModel(settings, s3PathSubject, messagePasser, directoryTransferUtility);
+                var filePathModel = new Model.FilePathModel(settings, localPathSubject, watcherObservable);
+                var s3PathModel = new Model.S3PathModel(settings, s3PathSubject, directoryTransferUtility);
 
                 uploaderModel = new UploaderModel(
                         _settings: settings,

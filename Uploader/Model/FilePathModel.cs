@@ -1,6 +1,8 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -14,27 +16,40 @@ namespace Uploader.Model
 {
     public class FilePathModel : IFilePathModel, IDisposable
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        public ReplaySubject<String> MessagePasser { get; }
+        readonly IFileSystem fileSystem;
+
         public BehaviorSubject<String> LocalPathSubject { get; }
         private IWatcherObservable watcher;
         private ISettings settings;
 
         public FilePathModel(ISettings _settings,
             BehaviorSubject<string> _localPathSubject,
-            ReplaySubject<string> _messagePasser)
+            IWatcherObservable _watcher) : this(
+                _settings,
+                _localPathSubject,
+                _watcher,
+                _fileSystem: new FileSystem() //use default implementation which calls System.IO
+            )
+        {
+        }
+
+        public FilePathModel(ISettings _settings,
+            BehaviorSubject<string> _localPathSubject,
+            IWatcherObservable _watcher,
+            IFileSystem _fileSystem)
+
         {
             this.settings = _settings;
-            this.MessagePasser = _messagePasser;
-
             this.LocalPathSubject = _localPathSubject;
-
+            this.fileSystem = _fileSystem;
 
             // Set up File Watcher
-            this.SetupWatcher();
+            this.watcher = _watcher;
             this.ChangeWatchPath(this.settings.WatchPath);
 
-            this.MessagePasser.OnNext("FilePathModel Initialized");
+            logger.Debug("FilePathModel Initialized");
         }
 
         public void Dispose()
@@ -49,9 +64,8 @@ namespace Uploader.Model
         {
             if (this.watcher == null)
             {
-                this.MessagePasser.OnNext("Setting up watcher ...");
-                //SetupWatcher();
-                this.MessagePasser.OnNext("Setup complete.");
+                logger.Warn("watcher was null, restrting ...");
+                SetupWatcher();
             }
 
             bool watchIsOn = this.watcher.IsWatching();
@@ -59,21 +73,26 @@ namespace Uploader.Model
             {
 
                 this.watcher.Stop();
-                this.MessagePasser.OnNext("Watcher Stopped");
+                logger.Info("Watcher Stopped");
             }
             else
             {
                 this.watcher.Start();
-                this.MessagePasser.OnNext("Watching.");
+                logger.Info("Watching.");
             };
         }
 
         public void ChangeWatchPath(String newPath)
         {
-            
-            if (Directory.Exists(newPath) || File.Exists(newPath))
+            logger.Debug($"Changing path from {this?.watcher?.Path} to {newPath}");
+            logger.Debug($"New path is Directory? {fileSystem.Directory.Exists(newPath.ToString())}");
+            if (fileSystem.Directory.Exists(newPath) || fileSystem.File.Exists(newPath))
             {
-                this.watcher.Path = newPath;
+                if (this.watcher != null)
+                {
+                    this.watcher.Path = newPath;
+                }
+                
                 this.settings.WatchPath = newPath;
                 this.LocalPathSubject.OnNext(newPath);
             } else
