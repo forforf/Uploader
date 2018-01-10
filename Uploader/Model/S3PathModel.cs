@@ -3,6 +3,7 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Reactive.Subjects;
 using System.Text;
@@ -17,16 +18,34 @@ namespace Uploader.Model
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         public BehaviorSubject<String> S3PathSubject { get; }
-        private TransferUtility directoryTransferUtility;
+        private ITransferUtility directoryTransferUtility;
         private ISettings settings;
+        private IFileSystem fileSystem;
 
-        public S3PathModel(ISettings _settings,
+     
+        public S3PathModel(
+            ISettings _settings,
             BehaviorSubject<String> _s3PathSubject,
-            TransferUtility _directoryTransferUtility)
+            ITransferUtility _directoryTransferUtility) : this(
+                _settings: _settings,
+                _s3PathSubject: _s3PathSubject,
+                _directoryTransferUtility: _directoryTransferUtility,
+                _fileSystem: new FileSystem() //use default implementation which calls System.IO
+            )
+        {
+        }
+
+        public S3PathModel(
+            ISettings _settings,
+            BehaviorSubject<String> _s3PathSubject,
+            ITransferUtility _directoryTransferUtility,
+            IFileSystem _fileSystem
+            )
         {
             this.settings = _settings;
             this.S3PathSubject = _s3PathSubject;
             this.directoryTransferUtility = _directoryTransferUtility;
+            this.fileSystem = _fileSystem;
 
             // Keep default S3 Path in real-time sync with control
             // ToDo: Don't use subject for this
@@ -43,7 +62,7 @@ namespace Uploader.Model
 
         public void UploadToS3(string localPath, string s3BucketPath)
         {
-            var pathObj = new UploaderPath(localPath);
+            var pathObj = new UploaderPath(localPath, fileSystem);
 
             if (pathObj.IsDirectory())
             {
@@ -87,7 +106,7 @@ namespace Uploader.Model
             while (true)
             {
                 // We only want to wait for files that exist. If a file doesn't exist, that'a a problem.
-                if (!File.Exists(fileName))
+                if (!this.fileSystem.File.Exists(fileName))
                 {
                     String msg = $"Could not find file: {fileName}";
                     logger.Error(msg);

@@ -12,6 +12,6 @@ namespace Uploader.Model
         IObservable<string> GetObservable();
         bool IsWatching();
         void ToggleWatch();
-        FileStream WaitForFile(string fullPath);
+        //FileStream WaitForFile(string fullPath);
     }
 }

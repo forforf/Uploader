@@ -21,10 +21,11 @@ namespace Uploader.Model
         readonly IFileSystem fileSystem;
 
         public BehaviorSubject<String> LocalPathSubject { get; }
-        private IWatcherObservable watcher;
+        public IWatcherObservable watcher;
         private ISettings settings;
 
-        public FilePathModel(ISettings _settings,
+        public FilePathModel(
+            ISettings _settings,
             BehaviorSubject<string> _localPathSubject,
             IWatcherObservable _watcher) : this(
                 _settings,
@@ -35,10 +36,12 @@ namespace Uploader.Model
         {
         }
 
-        public FilePathModel(ISettings _settings,
+        public FilePathModel(
+            ISettings _settings,
             BehaviorSubject<string> _localPathSubject,
             IWatcherObservable _watcher,
-            IFileSystem _fileSystem)
+            IFileSystem _fileSystem
+            )
 
         {
             this.settings = _settings;
@@ -62,11 +65,13 @@ namespace Uploader.Model
 
         public void ToggleWatch()
         {
-            if (this.watcher == null)
-            {
-                logger.Warn("watcher was null, restrting ...");
-                SetupWatcher();
-            }
+            //// This code will recreate the file watcher if it went away
+            //// but haven't figured out a way to test it yet
+            //if (this.watcher == null)
+            //{
+            //    logger.Warn("watcher was null, restrting ...");
+            //    SetupWatcher();
+            //}
 
             bool watchIsOn = this.watcher.IsWatching();
             if (watchIsOn)
@@ -111,35 +116,35 @@ namespace Uploader.Model
             return this.watcher.GetObservable();
         }
 
-        public FileStream WaitForFile(string fullPath)
-        {
-            const int TIMEOUT_MS = 20000;
-            const int RETRY_DELAY_MS = 100;
-            const int TRIES = TIMEOUT_MS / RETRY_DELAY_MS;
-            const FileMode FILEMODE = FileMode.Open;
-            const FileAccess FILEACCESS = FileAccess.ReadWrite;
-            const FileShare FILESHARE = FileShare.None;
+        //public FileStream WaitForFile(string fullPath)
+        //{
+        //    const int TIMEOUT_MS = 20000;
+        //    const int RETRY_DELAY_MS = 100;
+        //    const int TRIES = TIMEOUT_MS / RETRY_DELAY_MS;
+        //    const FileMode FILEMODE = FileMode.Open;
+        //    const FileAccess FILEACCESS = FileAccess.ReadWrite;
+        //    const FileShare FILESHARE = FileShare.None;
 
-            for (int numTries = 0; numTries < TRIES; numTries++)
-            {
-                FileStream fs = null;
-                try
-                {
-                    fs = new FileStream(fullPath, FILEMODE, FILEACCESS, FILESHARE);
-                    return fs;
-                }
-                catch (IOException)
-                {
-                    if (fs != null)
-                    {
-                        fs.Dispose();
-                    }
-                    Thread.Sleep(RETRY_DELAY_MS);
-                }
-            }
+        //    for (int numTries = 0; numTries < TRIES; numTries++)
+        //    {
+        //        FileStream fs = null;
+        //        try
+        //        {
+        //            fs = new FileStream(fullPath, FILEMODE, FILEACCESS, FILESHARE);
+        //            return fs;
+        //        }
+        //        catch (IOException)
+        //        {
+        //            if (fs != null)
+        //            {
+        //                fs.Dispose();
+        //            }
+        //            Thread.Sleep(RETRY_DELAY_MS);
+        //        }
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         private void SetupWatcher()
         {

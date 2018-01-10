@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Uploader\bin\Debug\AWSSDK.S3.dll</HintPath>
+    </Reference>
     <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
     </Reference>
@@ -135,6 +139,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ModelTests\S3PathModelTests.cs" />
     <Compile Include="ModelTests\TestSchedulerExampleTests.cs" />
     <Compile Include="ModelTests\FilePathModelTests.cs" />
     <Compile Include="ModelTests\UploaderModelTests.cs" />
