@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Uploader.Model
 {
@@ -13,11 +9,9 @@ namespace Uploader.Model
 
     public class FilePathSubjectFactory
     {
-        private PathNotExistHandler pathNotExistHandler;
-
         public static BehaviorSubject<string> Make(string _path, PathNotExistHandler _pathNotExistHandler = null)
         {
-            var pathNotExistHandler = _pathNotExistHandler == null ? DefaultPathNotExistHandler : _pathNotExistHandler;
+            var pathNotExistHandler = _pathNotExistHandler ?? DefaultPathNotExistHandler;
 
             string path = Directory.Exists(_path) ? _path : pathNotExistHandler(_path);
 

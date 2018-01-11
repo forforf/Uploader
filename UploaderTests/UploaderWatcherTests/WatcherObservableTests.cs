@@ -1,10 +1,10 @@
-﻿using System;
-using NUnit.Framework;
-using Uploader.UploadWatchers;
+﻿using NUnit.Framework;
+using System;
 using System.IO;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using System.Reactive.Threading.Tasks;
+using System.Threading.Tasks;
+using Uploader.UploadWatchers;
 
 namespace UploadeWatcherTests
 {

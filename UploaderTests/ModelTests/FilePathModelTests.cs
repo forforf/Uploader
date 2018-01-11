@@ -25,8 +25,8 @@ namespace UploaderTests.ModelTests
         public void BeforeEachTest()
         {
             this.settings = new Mock<ISettings>();
-            this.watchDirectoryName = GetTemporaryDirectory();
-            this.newWatchDirectoryName = @"C:\newPath\";
+            this.watchDirectoryName = GetTemporaryDirectory(@"c:\temp\uploader_tests_temp");
+            this.newWatchDirectoryName =GetTemporaryDirectory(@"C:\temp\uploader_tests_temp2\");
             this.localPathSubject = new BehaviorSubject<String>(this.watchDirectoryName);
             this.watcherObservable = new Mock<IWatcherObservable>();
 
@@ -80,10 +80,9 @@ namespace UploaderTests.ModelTests
         }
 
         [Test]
-        //[Ignore("We want to recreate the FileSystemWatcher if it goes away, but not working")]
         public void FilePathModel_ToggleWatch_WatchIsNull()
         {
-            String watchDirName = GetTemporaryDirectory();
+            String watchDirName = GetTemporaryDirectory(@"c:\temp\uploader_tests_temp");
             var _localPathSubject = new BehaviorSubject<String>(watchDirName);
             var _settingsMock = new Mock<ISettings>();
             _settingsMock.Setup(x => x.WatchPath).Returns(watchDirName);
@@ -92,9 +91,10 @@ namespace UploaderTests.ModelTests
             var _filePathModel = new FilePathModel(
                  _settingsMock.Object,
                  _localPathSubject,
-                 _watcherMock.Object);
-
-            _filePathModel.watcher = null;
+                 _watcherMock.Object)
+            {
+                watcher = null
+            };
             Assert.That(_filePathModel.watcher, Is.Null);
 
             _filePathModel.ToggleWatch();
@@ -140,11 +140,10 @@ namespace UploaderTests.ModelTests
         // Yes, I know I'm creating files for a unit test, the complexity
         // involved in injecting a file system interface is just not worth
         // the hassle.
-        private String GetTemporaryDirectory()
+        private String GetTemporaryDirectory(String dirName)
         {
-            String tempDirectory = @"c:\temp\uploader_tests_temp";
-            Directory.CreateDirectory(tempDirectory);
-            return tempDirectory;
+            Directory.CreateDirectory(dirName);
+            return dirName;
         }
     }
 }

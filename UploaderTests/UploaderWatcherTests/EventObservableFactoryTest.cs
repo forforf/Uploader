@@ -1,8 +1,8 @@
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Linq;
-using NUnit.Framework;
-using System.Collections.Generic;
 using UploadWatchers;
 using UploadWatcherTests;
 

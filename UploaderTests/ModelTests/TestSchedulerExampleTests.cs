@@ -1,14 +1,10 @@
 ﻿using Microsoft.Reactive.Testing;
-using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
-using Uploader;
-using Uploader.Model;
 
 namespace UploaderTests.ModelTests
 {

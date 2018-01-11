@@ -100,8 +100,10 @@ namespace Uploader.Model
                 FileSystemWatcher fsw = new FileSystemWatcher();
                 FileSystemWatcherAdapter fswAdapter = new FileSystemWatcherAdapter(fsw);
 
-                this.watcher = new WatcherObservable(fswAdapter);
-                this.watcher.Path = this.settings.WatchPath;
+                this.watcher = new WatcherObservable(fswAdapter)
+                {
+                    Path = this.settings.WatchPath
+                };
                 this.watcher.Stop();
             }
         }

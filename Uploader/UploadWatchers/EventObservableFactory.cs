@@ -1,15 +1,17 @@
+using NLog;
 using System;
-using System.IO;
-using UploadWatchers;
-using System.Reactive.Linq;
-using System.Reactive;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 
 namespace UploadWatchers
 {
     public static class EventHandlerFactory
     {
+
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
         public static IObservable<EventPattern<EventArgs>> GetEventObservable<T>(T eventObj, String eventName)
         {
             return EventHandlerFactory.GetObservable<T>(eventObj, eventName);
@@ -34,6 +36,7 @@ namespace UploadWatchers
                 obs = Observable.FromEventPattern<EventArgs>(eventObj, eventName);
             } catch (System.InvalidOperationException e)
             {
+                logger.Info($"Creating empty event handler after catching exception: {e}");
                 obs = Observable.Empty<EventPattern<EventArgs>>();
             }
             return obs;

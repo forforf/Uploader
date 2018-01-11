@@ -31,8 +31,10 @@ namespace UploadWatcherIntegrationTests
             FileSystemWatcher fsw = new FileSystemWatcher();
             FileSystemWatcherAdapter fswAdapter = new FileSystemWatcherAdapter(fsw);
 
-            watcherObservable = new WatcherObservable(fswAdapter);
-            watcherObservable.Path = TempPath;
+            watcherObservable = new WatcherObservable(fswAdapter)
+            {
+                Path = TempPath
+            };
             watcherObservable.Start();
         }
 
