@@ -1,14 +1,7 @@
 ﻿using NLog;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.IO.Abstractions;
-using System.Linq;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Uploader.UploadWatchers;
 using UploadWatchers;
 
@@ -18,8 +11,6 @@ namespace Uploader.Model
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        readonly IFileSystem fileSystem;
-
         public BehaviorSubject<String> LocalPathSubject { get; }
         public IWatcherObservable watcher;
         private ISettings settings;
@@ -27,26 +18,12 @@ namespace Uploader.Model
         public FilePathModel(
             ISettings _settings,
             BehaviorSubject<string> _localPathSubject,
-            IWatcherObservable _watcher) : this(
-                _settings,
-                _localPathSubject,
-                _watcher,
-                _fileSystem: new FileSystem() //use default implementation which calls System.IO
-            )
-        {
-        }
-
-        public FilePathModel(
-            ISettings _settings,
-            BehaviorSubject<string> _localPathSubject,
-            IWatcherObservable _watcher,
-            IFileSystem _fileSystem
+            IWatcherObservable _watcher
             )
 
         {
             this.settings = _settings;
             this.LocalPathSubject = _localPathSubject;
-            this.fileSystem = _fileSystem;
 
             // Set up File Watcher
             this.watcher = _watcher;
@@ -65,13 +42,13 @@ namespace Uploader.Model
 
         public void ToggleWatch()
         {
-            //// This code will recreate the file watcher if it went away
-            //// but haven't figured out a way to test it yet
-            //if (this.watcher == null)
-            //{
-            //    logger.Warn("watcher was null, restrting ...");
-            //    SetupWatcher();
-            //}
+            // This code will recreate the file watcher if it went away
+            // but haven't figured out a way to test it yet
+            if (this.watcher == null)
+            {
+                logger.Warn("watcher was null, restrting ...");
+                SetupWatcher();
+            }
 
             bool watchIsOn = this.watcher.IsWatching();
             if (watchIsOn)
@@ -90,8 +67,8 @@ namespace Uploader.Model
         public void ChangeWatchPath(String newPath)
         {
             logger.Debug($"Changing path from {this?.watcher?.Path} to {newPath}");
-            logger.Debug($"New path is Directory? {fileSystem.Directory.Exists(newPath.ToString())}");
-            if (fileSystem.Directory.Exists(newPath) || fileSystem.File.Exists(newPath))
+            logger.Debug($"New path is Directory? {Directory.Exists(newPath.ToString())}");
+            if (Directory.Exists(newPath) ||  File.Exists(newPath))
             {
                 if (this.watcher != null)
                 {
@@ -116,36 +93,6 @@ namespace Uploader.Model
             return this.watcher.GetObservable();
         }
 
-        //public FileStream WaitForFile(string fullPath)
-        //{
-        //    const int TIMEOUT_MS = 20000;
-        //    const int RETRY_DELAY_MS = 100;
-        //    const int TRIES = TIMEOUT_MS / RETRY_DELAY_MS;
-        //    const FileMode FILEMODE = FileMode.Open;
-        //    const FileAccess FILEACCESS = FileAccess.ReadWrite;
-        //    const FileShare FILESHARE = FileShare.None;
-
-        //    for (int numTries = 0; numTries < TRIES; numTries++)
-        //    {
-        //        FileStream fs = null;
-        //        try
-        //        {
-        //            fs = new FileStream(fullPath, FILEMODE, FILEACCESS, FILESHARE);
-        //            return fs;
-        //        }
-        //        catch (IOException)
-        //        {
-        //            if (fs != null)
-        //            {
-        //                fs.Dispose();
-        //            }
-        //            Thread.Sleep(RETRY_DELAY_MS);
-        //        }
-        //    }
-
-        //    return null;
-        //}
-
         private void SetupWatcher()
         {
             if (this.watcher == null)
@@ -154,6 +101,8 @@ namespace Uploader.Model
                 FileSystemWatcherAdapter fswAdapter = new FileSystemWatcherAdapter(fsw);
 
                 this.watcher = new WatcherObservable(fswAdapter);
+                this.watcher.Path = this.settings.WatchPath;
+                this.watcher.Stop();
             }
         }
     }

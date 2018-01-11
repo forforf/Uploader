@@ -1,14 +1,9 @@
 ﻿using Amazon.S3.Transfer;
 using NLog;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.IO.Abstractions;
-using System.Linq;
 using System.Reactive.Subjects;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Uploader.Model
 {
@@ -20,32 +15,16 @@ namespace Uploader.Model
         public BehaviorSubject<String> S3PathSubject { get; }
         private ITransferUtility directoryTransferUtility;
         private ISettings settings;
-        private IFileSystem fileSystem;
-
-     
-        public S3PathModel(
-            ISettings _settings,
-            BehaviorSubject<String> _s3PathSubject,
-            ITransferUtility _directoryTransferUtility) : this(
-                _settings: _settings,
-                _s3PathSubject: _s3PathSubject,
-                _directoryTransferUtility: _directoryTransferUtility,
-                _fileSystem: new FileSystem() //use default implementation which calls System.IO
-            )
-        {
-        }
 
         public S3PathModel(
             ISettings _settings,
             BehaviorSubject<String> _s3PathSubject,
-            ITransferUtility _directoryTransferUtility,
-            IFileSystem _fileSystem
+            ITransferUtility _directoryTransferUtility
             )
         {
             this.settings = _settings;
             this.S3PathSubject = _s3PathSubject;
             this.directoryTransferUtility = _directoryTransferUtility;
-            this.fileSystem = _fileSystem;
 
             // Keep default S3 Path in real-time sync with control
             // ToDo: Don't use subject for this
@@ -57,12 +36,13 @@ namespace Uploader.Model
 
         public void Dispose()
         {
-            // Nothing to dispose
+            // TODO: Figure out how to do real clean up.
+            Thread.Sleep(500);
         }
 
         public void UploadToS3(string localPath, string s3BucketPath)
         {
-            var pathObj = new UploaderPath(localPath, fileSystem);
+            var pathObj = new UploaderPath(localPath);
 
             if (pathObj.IsDirectory())
             {
@@ -106,7 +86,7 @@ namespace Uploader.Model
             while (true)
             {
                 // We only want to wait for files that exist. If a file doesn't exist, that'a a problem.
-                if (!this.fileSystem.File.Exists(fileName))
+                if (!File.Exists(fileName))
                 {
                     String msg = $"Could not find file: {fileName}";
                     logger.Error(msg);

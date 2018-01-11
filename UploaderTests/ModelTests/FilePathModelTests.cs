@@ -1,13 +1,9 @@
-﻿using Microsoft.Reactive.Testing;
-using Moq;
+﻿using Moq;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.IO.Abstractions.TestingHelpers;
-using System.Reactive.Concurrency;
+using System.IO;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
 using Uploader;
 using Uploader.Model;
 using UploadWatchers;
@@ -20,7 +16,6 @@ namespace UploaderTests.ModelTests
         private Mock<ISettings> settings;
         private BehaviorSubject<String> localPathSubject;
         private Mock<IWatcherObservable> watcherObservable;
-        private MockFileSystem fileSystem;
 
         private String watchDirectoryName;
         private String newWatchDirectoryName;
@@ -30,26 +25,27 @@ namespace UploaderTests.ModelTests
         public void BeforeEachTest()
         {
             this.settings = new Mock<ISettings>();
-            this.watchDirectoryName = @"C:\watchDir\";
+            this.watchDirectoryName = GetTemporaryDirectory();
             this.newWatchDirectoryName = @"C:\newPath\";
             this.localPathSubject = new BehaviorSubject<String>(this.watchDirectoryName);
             this.watcherObservable = new Mock<IWatcherObservable>();
 
-            this.fileSystem = new MockFileSystem();
-            var watchDirectory = this.fileSystem.Directory
-                .CreateDirectory(this.watchDirectoryName);
-            this.fileSystem.AddDirectory(newWatchDirectoryName);
-            //var dailyFtpDirectory = roootDirectory.CreateSubdirectory("DailyFtp");
-            //var dataDirectory = dailyFtpDirectory.CreateSubdirectory("Data");
-            //var outputDirectory = dailyFtpDirectory.CreateSubdirectory("Output");
             this.settings.Setup(x => x.WatchPath).Returns(this.watchDirectoryName);
             this.filePathModel = new FilePathModel(
                 settings.Object,
                 localPathSubject,
-                watcherObservable.Object,
-                this.fileSystem);
+                watcherObservable.Object);
         }
-               
+
+        [TearDown]
+        public void AfterEachTest()
+        {
+            if (!Directory.Exists(this.watchDirectoryName))
+            {
+                return;
+            }
+            Directory.Delete(watchDirectoryName, true);
+        }
 
         [Test]
         public void FilePathModel_Dispose()
@@ -84,12 +80,10 @@ namespace UploaderTests.ModelTests
         }
 
         [Test]
-        [Ignore("We want to recreate the FileSystemWatcher if it goes away, but not working")]
+        //[Ignore("We want to recreate the FileSystemWatcher if it goes away, but not working")]
         public void FilePathModel_ToggleWatch_WatchIsNull()
         {
-            var _fileSystem = new MockFileSystem();
-            String watchDirName = @"C:\temp";
-            var _watchDirectory = _fileSystem.Directory.CreateDirectory(watchDirName);
+            String watchDirName = GetTemporaryDirectory();
             var _localPathSubject = new BehaviorSubject<String>(watchDirName);
             var _settingsMock = new Mock<ISettings>();
             _settingsMock.Setup(x => x.WatchPath).Returns(watchDirName);
@@ -98,8 +92,7 @@ namespace UploaderTests.ModelTests
             var _filePathModel = new FilePathModel(
                  _settingsMock.Object,
                  _localPathSubject,
-                 _watcherMock.Object,
-                 _fileSystem);
+                 _watcherMock.Object);
 
             _filePathModel.watcher = null;
             Assert.That(_filePathModel.watcher, Is.Null);
@@ -108,13 +101,11 @@ namespace UploaderTests.ModelTests
 
             //Verify we have a watcher
             Assert.That(_filePathModel.watcher, Is.Not.Null);
-
-            //Verify we turn it on
-            watcherObservable.Verify(x => x.Start());
+            Assert.True(_filePathModel.watcher.IsWatching());
         }
 
         [Test]
-        public void FilePathModel_ChangeWatchPath()
+        public void FilePathModel_ChangeWatchPath_Directory()
         {
             
             String subjectPath = "";
@@ -144,6 +135,16 @@ namespace UploaderTests.ModelTests
             this.filePathModel.GetObservable();
 
             watcherObservable.Verify(x => x.GetObservable());
+        }
+
+        // Yes, I know I'm creating files for a unit test, the complexity
+        // involved in injecting a file system interface is just not worth
+        // the hassle.
+        private String GetTemporaryDirectory()
+        {
+            String tempDirectory = @"c:\temp\uploader_tests_temp";
+            Directory.CreateDirectory(tempDirectory);
+            return tempDirectory;
         }
     }
 }
